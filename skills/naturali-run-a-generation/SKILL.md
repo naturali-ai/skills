@@ -1,6 +1,6 @@
 ---
 name: naturali-run-a-generation
-description: Run a naturali.ai agent once and get its answer - POST messages to the agent's generate route, either in the background (202 plus a generation id to poll) or with wait=true for the finished result inline. Use when asked to run, call, test, invoke or ask a naturali agent something, generate a reply without a session, poll a generation, or when a generate call answers 502 AI_PROVIDER_ERROR, OUTPUT_SCHEMA_VALIDATION_FAILED, TEXT_ENCODED_TOOL_CALL, 503 model_not_priced, 402 insufficient_credit, 403 plan_limit_reached, 429 QUOTA_EXCEEDED, 409 IDEMPOTENCY_KEY_REUSED or 400 SYSTEM_MESSAGE_NOT_ALLOWED.
+description: Run a naturali.ai agent once, in the background (202 and a generation id to poll) or with wait=true for the result inline. Use when asked to run, call, test or ask a naturali agent something without a session, poll a generation, or when generate answers 502 AI_PROVIDER_ERROR, OUTPUT_SCHEMA_VALIDATION_FAILED, TEXT_ENCODED_TOOL_CALL, 503 model_not_priced, 402 insufficient_credit, 403 plan_limit_reached, 429 QUOTA_EXCEEDED, 409 IDEMPOTENCY_KEY_REUSED or 400 SYSTEM_MESSAGE_NOT_ALLOWED.
 license: Apache-2.0
 metadata:
   author: naturali.ai

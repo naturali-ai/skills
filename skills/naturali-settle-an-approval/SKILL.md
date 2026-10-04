@@ -1,6 +1,6 @@
 ---
 name: naturali-settle-an-approval
-description: Decide a held naturali.ai action - list the pending approvals queue, read the frozen proposal (tool, arguments, reasoning, predicted impact, expiry), approve it as proposed or with edited arguments, or reject it with a reason, then find what ran next (the agent's continuation generation or the resumed orchestration run). Use when asked to approve, reject, sign off, review or edit a pending approval, clear the approvals queue, find out why a run is awaiting_input or a tool result says pending_approval, or when approve answers 409 because the item expired or was already settled.
+description: Approve, edit or reject a held naturali.ai action from the approvals queue, and find what ran next. Use when asked to approve, reject, sign off, review or edit a pending approval, clear the approvals queue, find why a run is awaiting_input or a tool result says pending_approval, or when approve answers 409 because the item expired or was already settled.
 license: Apache-2.0
 metadata:
   author: naturali.ai

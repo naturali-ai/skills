@@ -1,6 +1,6 @@
 ---
 name: naturali-deploy-a-formation
-description: Apply a naturali.ai formation template (naturali.yaml) - write it (parameters, resources, outputs, ref/param/sub/ref_attr expressions, depends_on, deletion_policy, no_echo and use_previous_value parameters), validate it, deploy it, plan and apply changes, read its status and deploy log, and tear it down. Every other naturali skill that creates or changes a resource defers here for these calls. Use when asked to deploy, apply, plan, diff, update, inspect, roll back or delete a naturali formation, stack, template or infrastructure as code, or when a deploy answers unsupported_resource_type, VALIDATION_FAILED, status failed, FORMATION_REPLACE_CLEANUP_FAILED, FORMATION_DELETE_FAILED, FORMATION_INVALID_METADATA, plan_feature_not_included or plan_limit_reached.
+description: Write, validate, deploy, plan, update and tear down a naturali.ai formation template (naturali.yaml); every naturali skill that creates or changes a resource defers here. Use when asked to deploy, apply, plan, diff, update, inspect, roll back or delete a formation, stack or infrastructure as code, or on unsupported_resource_type, VALIDATION_FAILED, status failed, FORMATION_REPLACE_CLEANUP_FAILED, FORMATION_DELETE_FAILED, FORMATION_INVALID_METADATA, plan_feature_not_included or plan_limit_reached.
 license: Apache-2.0
 metadata:
   author: naturali.ai

@@ -1,6 +1,6 @@
 ---
 name: naturali-model-a-process-as-a-workflow
-description: Model a naturali.ai review process as a workflow - an agent drafts on entering a state, a person sends the draft back with feedback or approves it - by declaring the workflow in the formation template, opening a task, firing transitions and reading the task's append-only history. Use when asked to build a naturali workflow or state machine, add a human review state, have an agent work on entering a state with on_enter, open or move a task, send work back for revision, approve and close a task, edit a task's payload, read who moved a task and why, or debug 409 TASK_TRANSITION_CONFLICT.
+description: Model a naturali.ai review process as a workflow - an agent drafts on entering a state, a person sends the draft back or approves it - through tasks and their history. Use when asked to build a workflow or state machine, add a human review state, run an agent with on_enter, open or move a task, send work back for revision, approve and close a task, edit a task's payload, read who moved a task and why, or debug 409 TASK_TRANSITION_CONFLICT.
 license: Apache-2.0
 metadata:
   author: naturali.ai

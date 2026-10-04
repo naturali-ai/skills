@@ -1,6 +1,6 @@
 ---
 name: naturali-enable-naturali-models
-description: Give a naturali.ai project every naturali-managed model with no vendor account or credential - list the model catalog and its prices, declare one naturali_ai_provider as Provider in naturali.yaml, and prove it is priced for every model it serves. Use when asked to use naturali models, managed models or the catalog, set up a provider with no API key, list available models or their prices, create a provider naturali, or when a deploy fails with catalog_not_ready, managed_source_unavailable or 400 bad_request on a model from another source.
+description: Give a naturali.ai project every naturali-managed model with no vendor account or credential through one naturali_ai_provider, and read the catalog and its prices. Use when asked to use naturali, managed or catalog models, set up a provider with no API key, list available models or their prices, or when a deploy fails with catalog_not_ready, managed_source_unavailable or 400 bad_request on a model from another source.
 license: Apache-2.0
 metadata:
   author: naturali.ai

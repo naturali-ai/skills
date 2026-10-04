@@ -1,6 +1,6 @@
 ---
 name: naturali-attribute-spend-to-end-users
-description: Attribute a naturali.ai project's agent spend to each of your end users - declare an actor per end user (keyed by your own id for them) and sessions opened as that actor in the formation template, run a turn, then read usage grouped by actor or narrowed to one actor. Use when asked to track, report or bill usage or cost per customer or end user, create naturali actors, open a session for an end user, find which user spent the tokens, or explain the null bucket in usage grouped by actor.
+description: Attribute a naturali.ai project's agent spend to each end user with one actor per user and sessions opened as that actor, then read usage grouped by actor. Use when asked to track, report or bill usage or cost per customer or end user, create actors, open a session for an end user, find which user spent the tokens, or explain the null bucket in usage grouped by actor.
 license: Apache-2.0
 metadata:
   author: naturali.ai

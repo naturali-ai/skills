@@ -1,6 +1,6 @@
 ---
 name: naturali-gate-a-rollout-on-an-eval
-description: Make a naturali.ai staged rollout refuse to promote until an eval run pinned to the new agent version passes - declare the gate eval, start the release with promotion_gate, run the eval with agent_version, promote, and read the clearing run's id on the promoted version. Use when asked to gate, block or protect a release or canary on a test suite, require a passing eval before promotion, set promotion_gate, or when promote answers 409 PROMOTION_GATE_UNMET or the eval passed but the gate stays closed.
+description: Make a naturali.ai staged rollout refuse to promote until an eval run pinned to the new agent version passes (promotion_gate). Use when asked to gate, block or protect a release or canary on a test suite, require a passing eval before promotion, or when promote answers 409 PROMOTION_GATE_UNMET or the eval passed but the gate stays closed.
 license: Apache-2.0
 metadata:
   author: naturali.ai

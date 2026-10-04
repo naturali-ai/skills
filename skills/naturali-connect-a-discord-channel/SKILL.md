@@ -1,6 +1,6 @@
 ---
 name: naturali-connect-a-discord-channel
-description: Connect a Discord bot to a naturali.ai agent - create the Discord app and bot, declare a discord channel whose default action is the agent in the formation template, and prove the round trip by reading a real direct message and the agent's reply back through the API. Use when asked to connect Discord, put an agent behind a Discord bot, answer Discord DMs with an agent, or find out why a naturali Discord bot does not reply, and on 400 invalid_bot_token, 400 application_mismatch, 409 application_in_use or a channel gateway_error.
+description: Connect a Discord bot to a naturali.ai agent through a discord channel and prove the round trip on a real direct message. Use when asked to connect Discord, put an agent behind a Discord bot, answer Discord DMs with an agent, or find why a naturali Discord bot does not reply, and on 400 invalid_bot_token, 400 application_mismatch, 409 application_in_use or a channel gateway_error.
 license: Apache-2.0
 metadata:
   author: naturali.ai

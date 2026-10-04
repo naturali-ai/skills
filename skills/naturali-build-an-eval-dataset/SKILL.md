@@ -1,6 +1,6 @@
 ---
 name: naturali-build-an-eval-dataset
-description: Build a naturali.ai evaluation dataset - declare the dataset and its test cases (input messages, optional reference answer, metadata) in the formation template, and curate more cases from real completed generations so the answers an agent got wrong in production become regression tests. Use when asked to create a dataset, test cases or fixtures for evals, write a regression suite, turn a bad answer or production traffic into a test case, or when curating from a generation answers 409 GENERATION_NOT_COMPLETED, GENERATION_CONTENT_UNAVAILABLE or QUOTA_STORAGE_EXCEEDED.
+description: Build a naturali.ai eval dataset from declared test cases and from real completed generations, so production mistakes become regression tests. Use when asked to create a dataset, test cases or fixtures for evals, write a regression suite, turn a bad answer into a test case, or when curating answers 409 GENERATION_NOT_COMPLETED, GENERATION_CONTENT_UNAVAILABLE or QUOTA_STORAGE_EXCEEDED.
 license: Apache-2.0
 metadata:
   author: naturali.ai

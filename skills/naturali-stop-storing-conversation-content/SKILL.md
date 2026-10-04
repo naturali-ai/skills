@@ -1,6 +1,6 @@
 ---
 name: naturali-stop-storing-conversation-content
-description: Declare a zero-retention naturali.ai agent (trace_content_mode none) in the formation template so its prompts, replies, tool arguments and results are never written, then prove it - its transcript is an empty skeleton while an ordinary agent's holds the conversation, and tokens and cost are still recorded. Use when asked for zero retention, not storing prompts or replies, PII or compliance-safe agents, no conversation logs, trace_content_mode, an empty transcript with content_redacted_by_principal_id zero_retention, or erasing content an agent already stored.
+description: Declare a zero-retention naturali.ai agent (trace_content_mode none) so its prompts, replies and tool payloads are never stored, while tokens and cost still are. Use when asked for zero retention, not storing prompts or replies, PII or compliance-safe agents, no conversation logs, an empty transcript with content_redacted_by_principal_id zero_retention, or erasing content an agent already stored.
 license: Apache-2.0
 metadata:
   author: naturali.ai

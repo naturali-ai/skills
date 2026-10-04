@@ -1,6 +1,6 @@
 ---
 name: naturali-search-knowledge
-description: Run a naturali.ai knowledge search over a project's ready documents (and memories) and read the ranked passages, their score and raw similarity_score - the same retrieval an agent runs before every generation. Use when asked to search the knowledge base, test retrieval or RAG, see what an agent will be shown, pick a min_score or limit, check why an agent ignores its documents, or find which document or chunk answers a question.
+description: Search a naturali.ai project's ready documents and memories and read the ranked passages with their score and similarity_score - the retrieval an agent runs before every generation. Use when asked to search the knowledge base, test retrieval or RAG, see what an agent will be shown, pick a min_score or limit, check why an agent ignores its documents, or find which document or chunk answers a question.
 license: Apache-2.0
 metadata:
   author: naturali.ai

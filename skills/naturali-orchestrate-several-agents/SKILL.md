@@ -1,6 +1,6 @@
 ---
 name: naturali-orchestrate-several-agents
-description: Chain several naturali.ai agents into one orchestration (a researcher finds the facts, a writer drafts, a reviewer checks), validate the graph, declare it in the formation template, start a run and read what each step produced. Use when asked to build a multi-agent pipeline or squad, chain agents in sequence, pass one agent's output to the next, write input_mapping, state_mapping or output_mapping, validate an orchestration, start an orchestration run, poll a queued run, or read a run's node_executions.
+description: Chain several naturali.ai agents into one orchestration (researcher, writer, reviewer), start a run and read what each step produced. Use when asked to build a multi-agent pipeline or squad, chain agents in sequence, pass one agent's output to the next, write input_mapping, state_mapping or output_mapping, validate an orchestration, start or poll a run, or read a run's node_executions.
 license: Apache-2.0
 metadata:
   author: naturali.ai

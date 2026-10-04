@@ -1,6 +1,6 @@
 ---
 name: naturali-give-an-agent-an-http-tool
-description: Declare an http tool (URL with placeholders, method, headers, a JSON Schema for its arguments) in the naturali.ai formation template and bind it to the agent, optionally forcing the call with tool_choice and a has_tool_call stop condition, then prove the agent calls it. Use when an agent must call an API, webhook or HTTP endpoint, when asked to create, add or bind a naturali tool, put a token in a tool header, force a tool call, or when a write is refused with 422 FORCED_TOOL_CHOICE_CANNOT_STOP or a tool call fails with TOOL_EGRESS_BLOCKED.
+description: Declare an http tool (URL placeholders, method, headers, argument JSON Schema) and bind it to a naturali.ai agent, optionally forcing the call with tool_choice. Use when an agent must call an API, webhook or HTTP endpoint, when asked to create, add or bind a tool, put a token in a tool header, force a tool call, or on 422 FORCED_TOOL_CHOICE_CANNOT_STOP or TOOL_EGRESS_BLOCKED.
 license: Apache-2.0
 metadata:
   author: naturali.ai

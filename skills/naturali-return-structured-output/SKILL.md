@@ -1,6 +1,6 @@
 ---
 name: naturali-return-structured-output
-description: Constrain a naturali.ai agent to a JSON Schema by adding output_schema to it in the formation template, so its non-streaming generations return a parsed, validated object in output.object instead of prose. Use when asked for structured output, JSON output, typed or schema-validated replies, extracting fields with an agent, setting output_schema on a naturali agent, getting prose back after a schema, or debugging 502 OUTPUT_SCHEMA_VALIDATION_FAILED or a missing output.object.
+description: Constrain a naturali.ai agent to a JSON Schema with output_schema so its generations return a validated object in output.object instead of prose. Use when asked for structured, JSON, typed or schema-validated output, to extract fields with an agent, when prose comes back after setting a schema, or on 502 OUTPUT_SCHEMA_VALIDATION_FAILED or a missing output.object.
 license: Apache-2.0
 metadata:
   author: naturali.ai

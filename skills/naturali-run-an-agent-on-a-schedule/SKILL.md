@@ -1,6 +1,6 @@
 ---
 name: naturali-run-an-agent-on-a-schedule
-description: Put a naturali.ai agent on a cron schedule with a schedule trigger declared in the formation template, prove it with one fire by hand, trace the generation it produced back to the trigger, read the firing log, and pause the schedule. Use when asked to run an agent every morning, daily, hourly or nightly, create a cron or schedule trigger, fire a trigger by hand, check whether a scheduled run happened, pause or resume a schedule, find why a schedule went inactive, or debug 403 plan_limit_reached with resource trigger or trigger_interval.
+description: Put a naturali.ai agent on a cron schedule with a schedule trigger, fire it by hand, read the firing log and pause it. Use when asked to run an agent every morning, daily, hourly or nightly, create a cron or schedule trigger, fire a trigger by hand, check whether a scheduled run happened, pause or resume a schedule, find why a schedule went inactive, or on 403 plan_limit_reached for trigger or trigger_interval.
 license: Apache-2.0
 metadata:
   author: naturali.ai

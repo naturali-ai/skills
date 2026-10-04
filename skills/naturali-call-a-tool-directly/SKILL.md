@@ -1,6 +1,6 @@
 ---
 name: naturali-call-a-tool-directly
-description: Invoke a naturali.ai tool with no agent and no model in the path (POST tools/{tool_id}/call) to tell a broken tool from a model calling a working one badly, read the target's real status, URL and body from the error meta, fix the tool in the formation template and prove the fix with the run that failed. Use when a tool call fails, an agent says a service is down, a tool result is error-text, to test a tool's URL, headers or mapping before binding it, or when a call answers 502 TOOL_HTTP_ERROR, 403 TOOL_EGRESS_BLOCKED, 422 TOOL_DISPATCH_FAILED or 422 for a client tool.
+description: Call a naturali.ai tool with no agent or model in the path to tell a broken tool from a model misusing a working one, reading the target's real status, URL and body from the error. Use when a tool call fails, an agent says a service is down, to test a tool's URL, headers or mapping before binding it, or on 502 TOOL_HTTP_ERROR, 403 TOOL_EGRESS_BLOCKED or 422 TOOL_DISPATCH_FAILED.
 license: Apache-2.0
 metadata:
   author: naturali.ai

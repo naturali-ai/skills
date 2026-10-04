@@ -1,6 +1,6 @@
 ---
 name: naturali-replay-a-turn
-description: Re-answer one turn of a real naturali.ai conversation on its exact history - list the session's messages to find the position, fork the session after the customer's question onto a fixed agent, generate the new answer on the fork and prove the original is intact beside it. Use when an agent gave a bad, wrong or evasive answer in a real session, when asked to replay, reproduce, retry or branch a turn, fork a session, test a prompt fix against the context the agent actually saw, compare two agents on the same conversation, or list a session's forks.
+description: Re-answer one turn of a real naturali.ai conversation on its exact history by forking the session onto a fixed agent, leaving the original intact. Use when an agent gave a bad, wrong or evasive answer in a real session, when asked to replay, reproduce, retry or branch a turn, fork a session, test a prompt fix on the context the agent actually saw, compare two agents on one conversation, or list a session's forks.
 license: Apache-2.0
 metadata:
   author: naturali.ai

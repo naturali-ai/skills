@@ -1,6 +1,6 @@
 ---
 name: naturali-cap-spend-per-end-user
-description: Give every end user of a naturali.ai project their own token budget with one actor-scope quota in the formation template - proven by one user refused with 429 QUOTA_EXCEEDED while another, under the same quota, still gets an answer - then raise it to a real monthly allowance or give one user a different one. Use when asked to limit, budget or rate-limit spend per customer or end user, set a per-user monthly token allowance, stop one user exhausting the project's budget, or explain a 429 QUOTA_EXCEEDED "Quota exceeded for actor." or a 400 "scope actor is not valid for metric requests".
+description: Give every end user of a naturali.ai project their own token budget with one actor-scope quota, and a different one for a single user. Use when asked to limit, budget or rate-limit spend per customer or end user, set a per-user monthly token allowance, stop one user exhausting the project's budget, or explain 429 QUOTA_EXCEEDED "Quota exceeded for actor." or 400 "scope actor is not valid for metric requests".
 license: Apache-2.0
 metadata:
   author: naturali.ai

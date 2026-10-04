@@ -1,6 +1,6 @@
 ---
 name: naturali-invite-a-colleague
-description: Give a teammate access to a naturali.ai project by email address - even someone with no naturali account - as member or admin, see them go from pending to active on their first sign-in, then change their role or remove them. Use when asked to invite, add or share a project with a colleague, list project members, promote someone to admin, remove a member or leave a project, explain why a member shows as pending, or fix a 403 access_denied when adding a member with a project-scoped key or a 409 for an address already in the project.
+description: Give a teammate access to a naturali.ai project by email, even with no naturali account, as member or admin, then change their role or remove them. Use when asked to invite, add or share a project with a colleague, list members, promote someone to admin, remove a member or leave a project, explain a pending member, or on 403 access_denied with a project-scoped key or 409 for an address already in the project.
 license: Apache-2.0
 metadata:
   author: naturali.ai

@@ -1,6 +1,6 @@
 ---
 name: naturali-gate-a-tool-with-guardrails
-description: Put a guardrail on a risky naturali.ai tool in the formation template so small calls run on their own and large ones wait for a person - write the JSON Logic class expression, dry-run it with evaluate, attach it to the tool, and prove a small call executes while a large one is held on the approvals queue. Use when asked to gate, govern or threshold a tool, require human sign-off above an amount, write, test or attach a guardrail, classify tool calls A/B/C/D, or when a call answers 403 plan_feature_not_included, a tool result is pending_approval, or a direct call is refused with 422 TOOL_DISPATCH_FAILED.
+description: Put a JSON Logic guardrail on a risky naturali.ai tool so small calls run on their own and large ones wait for a person. Use when asked to gate, govern or threshold a tool, require human sign-off above an amount, write, test or attach a guardrail, classify tool calls A/B/C/D, or on 403 plan_feature_not_included, a pending_approval tool result or a direct call refused with 422 TOOL_DISPATCH_FAILED.
 license: Apache-2.0
 metadata:
   author: naturali.ai

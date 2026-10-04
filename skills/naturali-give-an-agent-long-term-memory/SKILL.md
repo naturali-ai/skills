@@ -1,6 +1,6 @@
 ---
 name: naturali-give-an-agent-long-term-memory
-description: Give a naturali.ai agent long-term memory by declaring a memory store, a memory rule that extracts facts from every completed turn of the agent, and knowledge_config.memory_store_ids so it recalls them, then prove a fact told in one generation is used in a later, separate one. Use when asked to make an agent remember users or customers across conversations, add persistent or long-term memory, learn facts from conversations automatically, create a memory store or memory rule, or check what an agent has learned.
+description: Give a naturali.ai agent long-term memory - a memory store, a memory rule that extracts facts from every completed turn, and recall through knowledge_config.memory_store_ids. Use when asked to make an agent remember users or customers across conversations, add persistent memory, learn facts from conversations automatically, create a memory store or memory rule, or check what an agent has learned.
 license: Apache-2.0
 metadata:
   author: naturali.ai

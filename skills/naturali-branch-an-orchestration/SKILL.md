@@ -1,6 +1,6 @@
 ---
 name: naturali-branch-an-orchestration
-description: Make a naturali.ai orchestration choose its own path - a triage agent with an output_schema classifies each message and a condition node sends it to only the matching agent - and prove it with two runs that took different branches. Use when asked to route or branch on a classification, add a condition node or conditional edges, send refunds and general questions to different agents, read a structured field with output.object, or understand why a node shows as skipped in node_executions.
+description: Make a naturali.ai orchestration route each message on a classification - a triage agent with output_schema feeds a condition node that runs only the matching agent. Use when asked to route or branch on a classification, add a condition node or conditional edges, read a structured field with output.object, or explain a node skipped in node_executions.
 license: Apache-2.0
 metadata:
   author: naturali.ai

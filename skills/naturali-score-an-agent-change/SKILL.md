@@ -1,6 +1,6 @@
 ---
 name: naturali-score-an-agent-change
-description: Measure whether a naturali.ai agent change is good enough to ship - declare an eval binding the agent to a dataset with an llm_judge scorer and a pass threshold, run it for a passed verdict, change the agent, rerun against the first run as baseline for a per-scorer delta, and read which items failed and why. Use when asked to test or regression-test an agent, check a prompt or instruction change before shipping, compare two eval runs or agent versions, get a pass/fail verdict, read why eval items failed, or when creating an eval answers 400 VALIDATION_FAILED or a run reports pass_rate null.
+description: Measure whether a naturali.ai agent change is good enough to ship with an eval (dataset, llm_judge scorer, pass threshold) run before and after, compared per scorer. Use when asked to test or regression-test an agent, check a prompt change before shipping, compare two eval runs or agent versions, get a pass/fail verdict, read why items failed, or when creating an eval answers 400 VALIDATION_FAILED or a run reports pass_rate null.
 license: Apache-2.0
 metadata:
   author: naturali.ai

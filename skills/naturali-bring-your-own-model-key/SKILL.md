@@ -1,6 +1,6 @@
 ---
 name: naturali-bring-your-own-model-key
-description: Use your own model vendor credential (OpenAI, Anthropic, Google, Bedrock, Vertex, Azure, Groq, xAI, a gateway or a self-hosted endpoint) in a naturali.ai project - declare it as a write-only secret and an ai_provider named Provider in naturali.yaml, then prove the credential works by listing the models it can run. Use when asked to bring your own key (BYOK), add an OpenAI or other vendor API key, store a model credential, rotate a vendor key, check which models a key can reach, or when a provider answers 502 MODEL_LISTING_FAILED, 400 MODEL_LISTING_UNSUPPORTED or a 400 for a bedrock or vertex provider without a credential.
+description: Use your own model vendor credential (OpenAI, Anthropic, Google, Bedrock, Vertex, Azure, Groq, xAI, a gateway or a self-hosted endpoint) in a naturali.ai project as a secret and an ai_provider. Use when asked to bring your own key (BYOK), add or rotate a vendor API key, check which models a key can reach, or when a provider answers 502 MODEL_LISTING_FAILED, 400 MODEL_LISTING_UNSUPPORTED or a 400 for bedrock or vertex without a credential.
 license: Apache-2.0
 metadata:
   author: naturali.ai

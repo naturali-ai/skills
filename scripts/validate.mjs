@@ -37,7 +37,8 @@ for (const dir of names) {
     fail('name must be 1-64 lowercase letters, digits and single hyphens');
   }
   if (typeof description !== 'string' || !description) fail('missing description');
-  else if (description.length > 1024) fail(`description is ${description.length} chars (max 1024)`);
+  // Every installed description is loaded into every session; the spec allows 1024.
+  else if (description.length > 512) fail(`description is ${description.length} chars (max 512)`);
   else if (/[<>]/.test(description)) fail('description must not contain angle brackets');
   if (!license) fail('missing license');
   if (/\]\((?!https?:)/.test(text)) fail('relative link; a skill must stand alone');

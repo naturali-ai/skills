@@ -83,7 +83,7 @@ export PROVIDER=aip_NzjzJDzoId8cm1Hu   # outputs.ai_provider_id
 
 - Two properties only. `secret_id`, `config` and `base_url` are refused, not
   ignored: it runs on naturali's access. `name` defaults to `naturali` (or
-  `naturali-vertex` for a Vertex-served model).
+  `"naturali-vertex"` for a Vertex-served model).
 - `default_model` must be a catalog `model` listed `available` (the vendor's own
   invocation string is refused). It is the fallback for agents that name no
   model, and it decides which source serves the provider — you never name the

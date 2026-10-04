@@ -44,14 +44,6 @@ resources:
       expected_output: Invoices are issued on the first of each month.
       metadata:
         topic: billing
-  RefundCase:
-    type: dataset_item
-    properties:
-      dataset_id: { ref: Cases }
-      input:
-        - role: user
-          content: What is our refund window?
-      expected_output: Refunds are accepted within 30 days of purchase.
 outputs:
   dataset_id: { ref: Cases }
 ```

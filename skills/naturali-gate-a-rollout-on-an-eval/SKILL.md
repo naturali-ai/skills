@@ -62,8 +62,9 @@ export EVAL=eval_RPMTrH6wp2eHPrC1
 
 ## 2. Write the new version
 
-Edit `Agent` in `naturali.yaml` (e.g. give it the refund policy) and apply it
-with `naturali-deploy-a-formation`. The plan reads:
+Edit `Agent` in `naturali.yaml` — e.g. give its `instructions` the policies
+your cases expect — and apply it with `naturali-deploy-a-formation`. The plan
+reads:
 
 ```json
 { "changes": [{ "logical_id": "Agent", "resource_type": "agent", "action": "update" }] }

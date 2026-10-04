@@ -1,6 +1,6 @@
 ---
 name: naturali-limit-what-an-agent-may-do
-description: Put a boundary_policy on a naturali.ai agent in the formation template so the platform refuses actions it would otherwise take on the agent's behalf (here memories:CreateMemory and memories:UpdateMemory, so it can read its memory but no longer write it), then read the refusal in the generation transcript and confirm nothing was written. Use when asked to restrict, sandbox or limit an agent's permissions, stop an agent writing memory, make an agent read-only, deny an IAM action to an agent, or when a transcript shows "Forbidden: boundary policy denies".
+description: "Put a boundary_policy on a naturali.ai agent so the platform refuses actions it would take on the agent's behalf, such as writing memories, and read the refusal in the transcript. Use when asked to restrict, sandbox or limit an agent's permissions, stop an agent writing memory, make it read-only, deny an IAM action to an agent, or when a transcript shows \"Forbidden: boundary policy denies\"."
 license: Apache-2.0
 metadata:
   author: naturali.ai

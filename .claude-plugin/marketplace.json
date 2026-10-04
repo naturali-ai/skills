@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "naturali",
-      "description": "Every naturali.ai tutorial as an Agent Skill, plus the core naturali skill.",
+      "description": "The naturali.ai tutorials split into atomic, reusable Agent Skills, plus the core naturali skill.",
       "source": "./",
       "strict": false
     }

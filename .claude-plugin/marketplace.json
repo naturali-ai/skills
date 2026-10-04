@@ -1,0 +1,15 @@
+{
+  "name": "naturali-skills",
+  "owner": { "name": "naturali.ai" },
+  "metadata": {
+    "description": "Agent Skills for building, running and auditing AI agents on naturali.ai."
+  },
+  "plugins": [
+    {
+      "name": "naturali",
+      "description": "The naturali.ai tutorials split into atomic, reusable Agent Skills, plus the core naturali skill.",
+      "source": "./",
+      "strict": false
+    }
+  ]
+}

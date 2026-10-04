@@ -1,16 +1,14 @@
 # naturali.ai skills
 
 [Agent Skills](https://agentskills.io) for building, running and auditing AI
-agents on [naturali.ai](https://naturali.ai). Each skill is one
-[docs tutorial](https://docs.naturali.ai/docs/tutorials) condensed into the
-calls an agent needs to deliver that one outcome, with `curl` as the canonical
-call and the matching CLI command and SDK method named beside it.
+agents on [naturali.ai](https://naturali.ai).
 
-Skills build the system as a **formation**: every resource the outcome needs is
-declared in one template, validated, deployed with one call, and changed by
-planning and applying an edited template. Actions that are not state
-(generating, firing a trigger, approving, uploading bytes) stay direct calls,
-and each skill names the direct route for a resource when a user asks for one.
+Each skill is one capability an agent combines with others to build what a
+user asks for. Systems are built as a **formation**: `naturali-formations`
+owns the template and its validate, plan, deploy and update calls, and every
+other skill documents how to declare its resource types in that template, the
+actions that are not state (generating, firing a trigger, approving, uploading
+bytes), and the direct routes for when a user asks for them.
 
 ## Install
 
@@ -28,8 +26,8 @@ Every skill expects a `nat_sk_…` project API key in `NATURALI_TOKEN`.
 
 ## Skills
 
-Listed in the order a newcomer should use them; each skill's
-**Before you start** names the skills that produce what it needs.
+Start with `naturali` and `naturali-formations`; each skill's **Before you
+start** names the skills that produce what it needs.
 
 <!-- skills:start -->
 | Skill | Does |
@@ -66,7 +64,8 @@ Listed in the order a newcomer should use them; each skill's
 
 ## Contributing
 
-A skill tracks its tutorial (`metadata.source`); when the tutorial changes,
+A skill draws on its module page (`metadata.docs`), the tutorials and the
+`<Type>ResourceProperties` schemas in the formations spec; when they change,
 change the skill. `node scripts/validate.mjs` checks every `SKILL.md` and runs
 in CI.
 

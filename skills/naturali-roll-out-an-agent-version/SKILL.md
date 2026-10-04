@@ -1,6 +1,6 @@
 ---
 name: naturali-roll-out-an-agent-version
-description: Serve a new naturali.ai agent version to a share of traffic beside the current one, read which version answered each generation, then promote it in one call or abort back to the old one. Use when asked for a canary, staged, gradual or percentage rollout, an A/B split between two agent versions, to raise the canary share, to see which version served a run, to promote or roll back a release, or when promote answers 409 NO_ACTIVE_RELEASE.
+description: Serve a new naturali.ai agent version to a share of traffic beside the current one, then promote or abort it. Use when asked for a canary, staged, gradual or percentage rollout, an A/B split between agent versions, to raise the canary share, see which version served a run, promote or roll back a release, or when promote answers 409 NO_ACTIVE_RELEASE.
 license: Apache-2.0
 metadata:
   author: naturali.ai

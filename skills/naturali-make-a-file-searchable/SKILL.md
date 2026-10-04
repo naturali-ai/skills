@@ -1,6 +1,6 @@
 ---
 name: naturali-make-a-file-searchable
-description: Upload a file (Markdown, text, PDF, a photo or a voice recording) to a naturali.ai project, ingest it into a chunked, embedded document, wait until it is ready, and read the text managed conversion wrote for images, audio and scanned PDFs. Use when asked to upload or index a file, add a handbook, PDF, screenshot, receipt or voice memo to the knowledge base, OCR or transcribe a file for search, or when an ingest answers 409 FILE_ALREADY_INGESTED, 413, 402 insufficient_credit or a document stays pending or failed.
+description: Upload a file (Markdown, text, PDF, photo or voice recording) to a naturali.ai project and ingest it into a searchable document, reading the text conversion wrote for images, audio and scans. Use when asked to upload or index a file, add a handbook, PDF, screenshot, receipt or voice memo to the knowledge base, OCR or transcribe a file, or on 409 FILE_ALREADY_INGESTED, 413, 402 insufficient_credit or a document stuck pending or failed.
 license: Apache-2.0
 metadata:
   author: naturali.ai

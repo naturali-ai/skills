@@ -1,6 +1,6 @@
 ---
 name: naturali-create-a-project
-description: Create a naturali.ai project - the tenancy boundary every provider, secret, agent and formation lives in - with one POST /v1/projects call, and export its id as PROJECT. Use when starting on naturali from scratch, when asked to create, set up or name a naturali project or environment, when no PROJECT id is known yet, or when creating one answers 403 access_denied (project-scoped key) or 403 plan_limit_reached (project cap).
+description: Create a naturali.ai project, the boundary every provider, secret, agent and formation lives in, and export its id as PROJECT. Use when starting on naturali from scratch, when asked to create or name a project or environment, when no PROJECT id is known yet, or when creating one answers 403 access_denied (project-scoped key) or 403 plan_limit_reached.
 license: Apache-2.0
 metadata:
   author: naturali.ai

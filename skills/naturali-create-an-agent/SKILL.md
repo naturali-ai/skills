@@ -1,6 +1,6 @@
 ---
 name: naturali-create-an-agent
-description: Declare a naturali.ai agent named Agent in naturali.yaml on the project's Provider - instructions, optional model, step and sampling limits - deploy it, change it later by editing the template (each change archives a new agent version), and list those versions. Use when asked to create, configure, rename or change a naturali agent or its instructions or model, see an agent's version history, try a fix on a second agent beside the original, or when an agent write answers 400 bad_request for a model, a request answers 400 SYSTEM_MESSAGE_NOT_ALLOWED, or a delete answers 409 AGENT_HAS_DEPENDENTS.
+description: Declare a naturali.ai agent (instructions, model, step and sampling limits) in naturali.yaml, change it by editing the template, and list its versions. Use when asked to create, configure, rename or change an agent or its instructions or model, see its version history, try a fix on a second agent beside the original, or on 400 bad_request for a model, 400 SYSTEM_MESSAGE_NOT_ALLOWED or 409 AGENT_HAS_DEPENDENTS.
 license: Apache-2.0
 metadata:
   author: naturali.ai

@@ -1,6 +1,6 @@
 ---
 name: naturali-converse-in-a-session
-description: Hold a multi-turn conversation with a naturali.ai agent in a session - declare the session (optionally as an end user's actor), send messages that answer themselves with auto_generate or generate on demand, read the session's transcript, cost and the exact model input of any turn. Use when asked to chat with an agent over several turns, open or resume a session, send a message, keep context between messages, attribute turns to a customer, read what the agent saw on a turn, or when a session call answers 409 (generation in progress), 410 (expired) or 429 QUOTA_EXCEEDED.
+description: Hold a multi-turn conversation with a naturali.ai agent in a session, answered automatically or on demand, and read its transcript, cost and the model input of any turn. Use when asked to chat with an agent over several turns, open or resume a session, keep context between messages, attribute turns to a customer, read what the agent saw on a turn, or when a session call answers 409 (generation in progress), 410 (expired) or 429 QUOTA_EXCEEDED.
 license: Apache-2.0
 metadata:
   author: naturali.ai

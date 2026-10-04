@@ -1,6 +1,6 @@
 ---
 name: naturali-cap-project-spend
-description: Put a token budget on a whole naturali.ai project - size it from the project's daily usage, declare a project-scope quota in monitor mode in the formation template, check the audit log for quotas:MonitorBreach, switch it to enforce, and prove it refuses a generation with 429 QUOTA_EXCEEDED before the model is called. Use when asked to cap, limit or budget a project's spend or tokens, set a daily or monthly spend limit, size a quota from usage history, watch a cap before enforcing it, stop a runaway agent, or explain a 429 QUOTA_EXCEEDED, a 409 QUOTA_CONFLICT or a cost_usd cap that never fires.
+description: Put a token budget on a whole naturali.ai project - size it from daily usage, watch a project-scope quota in monitor mode, then enforce it. Use when asked to cap, limit or budget a project's spend or tokens, set a daily or monthly limit, stop a runaway agent, or explain a 429 QUOTA_EXCEEDED, a 409 QUOTA_CONFLICT, a quotas:MonitorBreach audit entry or a cost_usd cap that never fires.
 license: Apache-2.0
 metadata:
   author: naturali.ai

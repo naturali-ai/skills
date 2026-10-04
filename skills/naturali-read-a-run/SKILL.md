@@ -1,6 +1,6 @@
 ---
 name: naturali-read-a-run
-description: Read back what a naturali.ai agent run did - the generation record (status, stop_reason, error, agent_version, usage and cost), the step-by-step transcript with each tool call and its result or error, the trace tree of a multi-agent run, the runs that continued it, and the list of an agent's failed runs. Use when asked why an agent said something, what a run cost, which version answered, which tool call failed, to debug a failed or wrong run, find an agent's failed runs, follow a continuation after an approval or tool output, or when a transcript comes back empty with content_redacted_at set.
+description: Read back what a naturali.ai agent run did - status, error, version, usage and cost, each tool call and its result, the trace tree, continuations and an agent's failed runs. Use when asked why an agent said something, what a run cost, which version answered, which tool call failed, to debug a failed or wrong run, follow a continuation after an approval or tool output, or when a transcript is empty with content_redacted_at set.
 license: Apache-2.0
 metadata:
   author: naturali.ai

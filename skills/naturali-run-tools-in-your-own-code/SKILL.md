@@ -1,6 +1,6 @@
 ---
 name: naturali-run-tools-in-your-own-code
-description: Give a naturali.ai agent a client tool - a function your own code runs - declared in the formation template; the generation pauses at requires_action with the call's arguments, your code executes it wherever your data lives and submits the result to tool-outputs, and the same generation resumes and answers. Use when an agent must reach a database, internal service or person the platform cannot reach, when asked for client-side or local function calling, to handle status requires_action or required_action.tool_calls, submit tool outputs, or fix 409 GENERATION_NOT_AWAITING_TOOL_OUTPUTS.
+description: Give a naturali.ai agent a client tool that your own code runs - the generation pauses at requires_action, your code submits the result to tool-outputs, and it resumes. Use when an agent must reach a database, internal service or person the platform cannot, when asked for client-side or local function calling, to handle requires_action or required_action.tool_calls, submit tool outputs, or on 409 GENERATION_NOT_AWAITING_TOOL_OUTPUTS.
 license: Apache-2.0
 metadata:
   author: naturali.ai

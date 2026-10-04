@@ -1,6 +1,6 @@
 ---
 name: naturali-pause-a-run-for-a-human-decision
-description: Add an approval step to a naturali.ai orchestration so every run parks as awaiting_input until a person approves the proposed tool call, then read the run back to see the decision and the step that ran after it. Use when asked to add human-in-the-loop or an approval node to an orchestration, hold a reply or tool call for review before it is sent, route on approved, rejected or expired, read required_action on an awaiting_input run, or check whether a parked run sent anything after approval.
+description: Add an approval step to a naturali.ai orchestration so each run parks as awaiting_input until a person approves the proposed tool call. Use when asked to add human-in-the-loop or an approval node to an orchestration, hold a reply or tool call for review before it is sent, route on approved, rejected or expired, read required_action on an awaiting_input run, or check what a parked run did after approval.
 license: Apache-2.0
 metadata:
   author: naturali.ai

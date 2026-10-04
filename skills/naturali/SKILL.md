@@ -58,20 +58,25 @@ a `429` from an enforced quota carries `Retry-After` in seconds, as does
 
 1. **Project.** `POST /v1/projects`, or list the caller's with
    `GET /v1/projects`. Everything below is scoped to its id.
-2. **Model.** Either enable the managed offering
-   (`POST /v1/projects/{project_id}/ai-providers` with `provider: "naturali"`
-   and a `default_model`) or register the caller's own credential: store it as
-   a secret, then create an `ai-provider` pointing at it. `GET /v1/models` lists
-   the managed catalog; a model has one public name, `model`.
-3. **Agent.** `POST /v1/projects/{project_id}/agents` with an `ai_provider_id`
-   (or `model_route_id`), `instructions`, and optionally `tool_bindings` and
-   `knowledge_config` (which also names memory stores). Agents are
-   versioned: an update is a new version, and a release is promoted, not edited.
-4. **Generate.** `POST /v1/projects/{project_id}/agents/{agent_id}/generate`
+2. **Declare the system.** Providers, secrets, agents, tools, knowledge,
+   channels, evals, triggers and the rest go in one formation template,
+   deployed with `POST /v1/projects/{project_id}/formations`;
+   `…/formations/plan` shows what an edit will change before it is applied.
+   Each resource also has its own routes, for a one-off change when no
+   template is wanted.
+3. **Model.** Either a `naturali_ai_provider` with a `default_model` (the
+   managed offering, no credential) or the caller's own credential as a
+   `secret` plus an `ai_provider` naming it. `GET /v1/models` lists the managed
+   catalog; a model has one public name, `model`.
+4. **Agent.** An `agent` with an `ai_provider_id` (or `model_route_id`),
+   `instructions`, and optionally `tool_bindings` and `knowledge_config`
+   (which also names memory stores). Agents are versioned: a change is a new
+   version, and a release is promoted, not edited.
+5. **Generate.** `POST /v1/projects/{project_id}/agents/{agent_id}/generate`
    with `messages`; it answers `202` and runs in the background, or add
    `?wait=true` for the result inline. For a multi-turn thread use `conversations` or `sessions`
    and pass `agent_id` in the body.
-5. **Read back.** `GET …/generations/{generation_id}` for status and cost;
+6. **Read back.** `GET …/generations/{generation_id}` for status and cost;
    `…/transcript` for the answer and each tool call; `activity`, filtered by
    `generation_id`, for the approvals and actions behind it; `audit-log` for
    the project-wide record.
@@ -84,6 +89,25 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/generat
   -H "Content-Type: application/json" \
   -d '{ "messages": [{ "role": "user", "content": "What is our refund window?" }] }'
 ```
+
+## Task skills
+
+Each task has its own skill with the exact calls; load it rather than working
+from this summary. Each one that creates a resource adds it to the template that
+`naturali-deploy-a-formation` deploys.
+
+| Task | Skills |
+| --- | --- |
+| Set up | `naturali-create-a-project`, `naturali-deploy-a-formation`, `naturali-enable-naturali-models`, `naturali-bring-your-own-model-key`, `naturali-invite-a-colleague` |
+| Shape an agent | `naturali-create-an-agent`, `naturali-return-structured-output`, `naturali-stop-storing-conversation-content` |
+| Run and debug | `naturali-run-a-generation`, `naturali-converse-in-a-session`, `naturali-read-a-run`, `naturali-replay-a-turn` |
+| Tools | `naturali-give-an-agent-an-http-tool`, `naturali-run-tools-in-your-own-code`, `naturali-call-a-tool-directly` |
+| Knowledge and memory | `naturali-make-a-file-searchable`, `naturali-search-knowledge`, `naturali-ground-an-agent-in-documents`, `naturali-give-an-agent-long-term-memory`, `naturali-let-an-agent-write-memories` |
+| Control | `naturali-gate-a-tool-with-guardrails`, `naturali-settle-an-approval`, `naturali-limit-what-an-agent-may-do` |
+| Channels | `naturali-connect-a-discord-channel` |
+| Evaluate and release | `naturali-build-an-eval-dataset`, `naturali-score-an-agent-change`, `naturali-score-open-ended-answers`, `naturali-roll-out-an-agent-version`, `naturali-gate-a-rollout-on-an-eval` |
+| Automate | `naturali-orchestrate-several-agents`, `naturali-branch-an-orchestration`, `naturali-pause-a-run-for-a-human-decision`, `naturali-model-a-process-as-a-workflow`, `naturali-run-an-agent-on-a-schedule` |
+| Spend | `naturali-cap-project-spend`, `naturali-attribute-spend-to-end-users`, `naturali-cap-spend-per-end-user` |
 
 ## Modules, by what they are for
 

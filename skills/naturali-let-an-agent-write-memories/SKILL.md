@@ -1,6 +1,6 @@
 ---
 name: naturali-let-an-agent-write-memories
-description: Give a naturali.ai agent a write_memory tool on a memory store by declaring the store and knowledge_config.write_memory_store_id (plus memory_store_ids to read it back) in the formation template, then ask it to remember something and list what it wrote. Use when asked to let an agent save notes or remember things on request, give an agent a write_memory tool, have the agent decide what to store mid-conversation, or check what an agent saved to memory.
+description: Give a naturali.ai agent a write_memory tool on a memory store (knowledge_config.write_memory_store_id) so it saves what it is asked to remember. Use when asked to let an agent save notes or remember things on request, give it a write_memory tool, have it decide what to store mid-conversation, or check what an agent saved to memory.
 license: Apache-2.0
 metadata:
   author: naturali.ai

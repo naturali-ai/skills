@@ -1,6 +1,6 @@
 ---
 name: naturali-ground-an-agent-in-documents
-description: Give a naturali.ai agent retrieval over the project's documents by declaring knowledge_config (document_paths, limit, min_score) on it in the formation template, then prove it with a question only the documents can answer. Use when asked to make an agent answer from documents, a handbook, PDFs, photos or recordings, add RAG to an agent, stop an agent guessing or hallucinating beyond its sources, scope an agent to part of the corpus, or when an agent ignores documents it should know.
+description: Give a naturali.ai agent retrieval over the project's documents with knowledge_config (document_paths, limit, min_score). Use when asked to make an agent answer from documents, a handbook, PDFs, photos or recordings, add RAG to an agent, stop it guessing beyond its sources, scope it to part of the corpus, or when an agent ignores documents it should know.
 license: Apache-2.0
 metadata:
   author: naturali.ai

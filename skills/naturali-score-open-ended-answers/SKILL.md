@@ -1,6 +1,6 @@
 ---
 name: naturali-score-open-ended-answers
-description: Grade naturali.ai agent replies that have no single correct wording with a rubric judge - declare an eval with an llm_judge rubric prompt plus a cheap json_logic floor, start the run in the background, poll it to a verdict, read the judge's score and reasoning per item, and cancel a run you no longer need. Use when asked to write a rubric or LLM-as-judge, score free-text, support or open-ended answers, check a rule a string match cannot (tone, no promises), run an eval in the background or over 25 items, poll an eval run, read judge reasoning, cancel an eval run, or when items come back errored from an unparseable judge reply.
+description: Grade naturali.ai agent replies that have no single correct wording with an llm_judge rubric plus a json_logic floor, run in the background. Use when asked to write a rubric or LLM-as-judge, score free-text or open-ended answers, check a rule a string match cannot (tone, no promises), run or poll an eval in the background or over 25 items, read judge reasoning, cancel an eval run, or when items error from an unparseable judge reply.
 license: Apache-2.0
 metadata:
   author: naturali.ai

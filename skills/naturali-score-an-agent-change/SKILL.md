@@ -134,9 +134,12 @@ Make the change — here, give `Agent` the policy it was missing in
 `naturali.yaml` — and apply it with `naturali-deploy-a-formation`:
 
 ```yaml
+resources:
   Agent:
     type: agent
     properties:
+      name: refund-explainer
+      ai_provider_id: { ref: Provider }
       instructions: Answer in one sentence. Invoices are issued on the first of each month. Refunds are accepted within 30 days of purchase. If you are unsure, say so.   # changed
 ```
 

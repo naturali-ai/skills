@@ -96,8 +96,7 @@ resources:
 ```
 
 Apply it with `naturali-deploy-a-formation` (one `update` on the tool), then
-repeat step 1: it now answers `200` with the target's body,
-`{ "status": "ok" }`.
+repeat step 1: a `200` with the target's body proves the fix.
 
 - Without a formation (only when the user asks): `PATCH …/tools/{tool_id}`
   with the new `execute` (CLI `naturali update-tool` · SDK

@@ -40,7 +40,7 @@ curl -sS https://api.naturali.ai/v1/projects \
 
 A project is not declarable in a template, so this is always a direct call.
 
-CLI `naturali create-project --name "getting started"` · SDK `naturali.projects.createProject`
+CLI `naturali create-project` · SDK `naturali.projects.createProject`
 
 ```bash
 curl -sS -X POST https://api.naturali.ai/v1/projects \

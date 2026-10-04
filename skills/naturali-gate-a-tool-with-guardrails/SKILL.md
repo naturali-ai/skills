@@ -1,6 +1,6 @@
 ---
 name: naturali-gate-a-tool-with-guardrails
-description: Declare a risky tool and a guardrail in a naturali.ai formation template and deploy them so small calls run on their own and large ones wait on the approvals queue, dry-run the guardrail, bind the gated tool to an agent, approve a held call and confirm the agent finished. Use when asked to gate, govern or put a threshold on a naturali tool, require human sign-off above an amount, write or evaluate a guardrail, attach a guardrail to a tool, list pending approvals, or approve or reject a held tool call.
+description: Put a guardrail on a risky naturali.ai tool in the formation template so small calls run on their own and large ones wait for a person - write the JSON Logic class expression, dry-run it with evaluate, attach it to the tool, and prove a small call executes while a large one is held on the approvals queue. Use when asked to gate, govern or threshold a tool, require human sign-off above an amount, write, test or attach a guardrail, classify tool calls A/B/C/D, or when a call answers 403 plan_feature_not_included, a tool result is pending_approval, or a direct call is refused with 422 TOOL_DISPATCH_FAILED.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -9,65 +9,31 @@ metadata:
 
 # Gate a tool with guardrails
 
-Outcome: an agent whose refund tool is governed — under $100 runs on its own, a
-larger refund waits for a person — and one held refund approved and finished.
+Outcome: a refund tool that runs on its own under $100 and waits for a person
+above it — proven by one call that executes and one that is held.
 
 ## Before you start
 
-- `NATURALI_TOKEN` — a `nat_sk_…` project API key.
-- `NATURALI_API=https://api.naturali.ai/v1` — used by the curl calls below.
-- `PROJECT`, `PROVIDER`, `FORMATION`, `AGENT` and its template `agent.yaml`
-  (logical id `Agent`, parameter `ProviderId`), from
-  `naturali-first-agent-generation`. This skill extends that template.
-- `jq`, to put the template file into the JSON body.
-- Guardrails and approvals need the **Pro** plan or above (the project owner's
-  plan, not the caller's). Below it, a template declaring a guardrail,
-  evaluating one and listing approvals answer `403 plan_feature_not_included`.
+- `NATURALI_TOKEN` — a `nat_sk_…` project API key; `PROJECT` — the project id.
+- `naturali.yaml` deployed as `$FORMATION`, with an `http` tool `Refund`
+  (`issue-refund`, shown in step 3) bound to `Agent`, from
+  `naturali-give-an-agent-an-http-tool`; `AGENT` exported. The responses
+  below come from an agent instructed: "When asked to refund an order, call
+  issue-refund once with the order id and the amount in US dollars, then
+  report the result in one sentence."
+- The **Pro** plan or above (the project owner's, not the caller's). Below
+  it, a template declaring a `guardrail`, evaluating one and listing
+  approvals answer `403 plan_feature_not_included`; reading and deleting a
+  guardrail stay open on every rung.
 
-Ids below are examples; use the ones your own calls return. Every call is also
-a CLI command (`naturali <operationId-kebab>`) and an SDK method
-(`naturali.<module>.<operationId>`), named under each step.
+Ids below are examples; use the ones your own calls return.
 
-## 1. Create the tool
+## 1. Write the guardrail
 
-An `http` tool posting to `httpbin.org`, which echoes back, so nothing moves.
-Add to `agent.yaml` under `resources` and `outputs`:
-
-```yaml
-resources:
-  RefundTool:
-    type: tool
-    properties:
-      name: issue-refund
-      type: http
-      description: Refunds an order. amount is in US dollars.
-      parameters:
-        type: object
-        properties:
-          order_id:
-            type: string
-          amount:
-            type: number
-        required:
-          - order_id
-          - amount
-      execute:
-        url: https://httpbin.org/post
-        method: POST
-outputs:
-  tool_id:
-    ref: RefundTool
-```
-
-- Only when the user asks for direct calls: `POST …/tools` with the same
-  properties as the body (CLI `naturali create-tool` · SDK
-  `naturali.tools.createTool`).
-
-## 2. Write the guardrail
-
-`class` is one JSON Logic expression over the call's arguments: `A` (execute)
-under $100, `C` (ask a person) otherwise. `default_class: "C"` sends anything
-the expression does not anticipate to a person too. Add:
+A guardrail classifies one proposed call: `A` execute, `B` execute if `guard`
+passes, `C` ask a person, `D` refuse. `class` is one JSON Logic expression —
+no rule list. This one answers `A` under $100 and `C` otherwise. Add to
+`naturali.yaml`:
 
 ```yaml
 resources:
@@ -78,125 +44,115 @@ resources:
       default_class: C
       class:
         if:
-          - "<":
-              - var: args.amount
-              - 100
+          - { "<": [{ var: args.amount }, 100] }
           - A
           - C
 outputs:
-  guardrail_id:
-    ref: RefundSignOff
+  guardrail_id: { ref: RefundSignOff }
 ```
 
-- In a template `class` and `default_class` sit directly on the properties;
-  the direct route nests them in one `document` object.
-- `expires_in` (the approval window, 24 hours by default) is not a guardrail
-  template property.
-
-Review the diff (creates nothing), then apply it:
-
-CLI `naturali plan-formation` · SDK `naturali.formations.planFormation`
+Apply it with `naturali-deploy-a-formation` (one `create`), then:
 
 ```bash
-curl -sS -X POST "$NATURALI_API/projects/$PROJECT/formations/plan" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d "$(jq -Rn --rawfile t agent.yaml --arg f "$FORMATION" --arg p "$PROVIDER" \
-        '{formation_id: $f, template: $t, parameters: {ProviderId: $p}}')"
-```
-
-```json
-{ "changes": [
-  { "logical_id": "Agent", "resource_type": "agent", "action": "no-op" },
-  { "logical_id": "RefundTool", "resource_type": "tool", "action": "create" },
-  { "logical_id": "RefundSignOff", "resource_type": "guardrail", "action": "create" } ] }
-```
-
-CLI `naturali update-formation` · SDK `naturali.formations.updateFormation`
-
-```bash
-curl -sS -X PUT "$NATURALI_API/projects/$PROJECT/formations/$FORMATION" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d "$(jq -Rn --rawfile t agent.yaml --arg p "$PROVIDER" \
-        '{template: $t, parameters: {ProviderId: $p}}')"
-```
-
-```json
-{ "id": "form_EPis15Nfukary167", "status": "active", "error": null,
-  "outputs": { "agent_id": "agent_8xS50HUYsaFDGH11", "tool_id": "tool_NzCBgtWBAG7QkiaJ", "guardrail_id": "guard_WwusNpQOzrgblxuA" } }
-```
-
-- Check `error` as well as `status`: an `active` formation can still carry one.
-- Only when the user asks for direct calls: `POST …/guardrails` with `name`
-  and `document: { default_class, class }` (CLI `naturali create-guardrail` ·
-  SDK `naturali.guardrails.createGuardrail`).
-
-```bash
-export TOOL=tool_NzCBgtWBAG7QkiaJ
 export GUARDRAIL=guard_WwusNpQOzrgblxuA
 ```
 
-## 3. Dry-run it
+- `default_class` (itself defaulting to `C`) applies whenever `class`
+  returns anything but `A`–`D`: a guardrail that did not anticipate a call
+  asks a person.
+- `var` reads three namespaces only: `args.*` (the call's arguments),
+  `context.*` (the caller's `guardrail_context`, keys verbatim — use
+  snake_case) and `runtime.*` (platform metrics such as
+  `runtime.tools.tool_calls.24h`). Anything else is refused `400` at write
+  time; a missing value at evaluation fails closed.
+- A missing `var` is falsy, so `{ "<": [{ var: args.amount }, 100] }` is
+  **true** when `amount` is absent. Where that must not reach `A`, test
+  presence: `{ and: [{ var: args.amount }, { "<": [{ var: args.amount }, 100] }] }`.
+- In a template `class`, `default_class`, `guard` and `escalate` sit directly
+  on the properties; the direct route nests them in one `document`.
+  `expires_in` (the approval window, default 24 h) exists only in that
+  `document`.
+- Every `class`/`guard` change archives a new guardrail version; held items
+  cite it as `policy_version`.
+- Without a formation (only when the user asks): `POST …/guardrails` with
+  `name` and `document: { default_class, class }` (CLI
+  `naturali create-guardrail` · SDK `naturali.guardrails.createGuardrail`).
 
-Returns the record a real call would produce; nothing executes, nothing is filed.
+## 2. Dry-run it
+
+Returns the exact record a real call would produce. Nothing executes, no
+approval is filed.
 
 CLI `naturali evaluate-guardrail` · SDK `naturali.guardrails.evaluateGuardrail`
 
 ```bash
 curl -sS -X POST \
-  "$NATURALI_API/projects/$PROJECT/guardrails/$GUARDRAIL/evaluate" \
+  "https://api.naturali.ai/v1/projects/$PROJECT/guardrails/$GUARDRAIL/evaluate" \
   -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H 'Content-Type: application/json' \
+  -H "Content-Type: application/json" \
   -d '{ "args": { "order_id": "1002", "amount": 400 } }'
 ```
 
 ```json
-{ "kind": "guardrail_evaluation", "class": "C", "decision": "route_to_approval", "context_snapshot": { "args.amount": 400 } }
+{
+  "kind": "guardrail_evaluation",
+  "guardrail_id": "guard_WwusNpQOzrgblxuA",
+  "guardrail_version": 1,
+  "class": "C",
+  "decision": "route_to_approval",
+  "guard_result": null,
+  "context_snapshot": { "args.amount": 400 }
+}
 ```
 
-- With `"amount": 40` the answer is `class: "A"`, `decision: "execute"`.
+- With `"amount": 40`: `class: "A"`, `decision: "execute"`.
+- Also takes `guardrail_context` and a `tool_id` (to resolve
+  `runtime.tools.*`).
 
-## 4. Attach it and bind the tool
+## 3. Attach it to the tool
 
-Attach the guardrail to the **tool**, so it carries its gate to every agent it
-is bound to, then bind the tool to the agent. The responses below come from an
-agent with the `instructions` shown. Edit `agent.yaml`:
+Attached to the **tool**, the gate follows it to every agent it is bound to.
+Edit `Refund` in `naturali.yaml`:
 
 ```yaml
 resources:
-  RefundTool:
+  Refund:
+    type: tool
     properties:
-      # …as in step 1, plus:
-      guardrail_ids:
-        - ref: RefundSignOff
-  Agent:
-    properties:
-      # …as before, plus:
-      instructions: When asked to refund an order, call issue-refund once with the order id and the amount in US dollars, then report the result in one sentence.
-      tool_bindings:
-        - tool_id:
-            ref: RefundTool
+      name: issue-refund
+      type: http
+      description: Refunds an order. amount is in US dollars.
+      parameters:
+        type: object
+        properties:
+          order_id: { type: string }
+          amount: { type: number }
+        required: [order_id, amount]
+      execute: { url: 'https://httpbin.org/post', method: POST }
+      guardrail_ids:                      # added
+        - { ref: RefundSignOff }
 ```
 
-Plan and update with the same two calls as step 2; the plan shows `update` on
-`RefundTool` and `Agent`.
+Apply it with `naturali-deploy-a-formation` (one `update` on `Refund`).
 
-- `tool_bindings` is the full set: list every tool the agent should keep.
-- Only when the user asks for direct calls: `PATCH …/tools/{tool_id}` with
-  `guardrail_ids` (CLI `naturali update-tool` · SDK `naturali.tools.updateTool`),
-  then `PATCH …/agents/{agent_id}` with `tool_bindings` (CLI
-  `naturali patch-agent` · SDK `naturali.agents.patchAgent`).
+- `guardrail_ids` on `Agent` governs every tool that agent calls; on the
+  project (`PATCH /v1/projects/{project_id}`, needs `admin`) it is the floor
+  under every tool call. Each array is replaced wholesale.
+- Several guardrails on one call: the strictest decision wins (`blocked` >
+  `tripwire` > `route_to_approval` > `execute`).
+- Without a formation (only when the user asks): `PATCH …/tools/{tool_id}`
+  with `guardrail_ids` (CLI `naturali update-tool` · SDK
+  `naturali.tools.updateTool`).
 
-## 5. Run a small and a large refund
+## 4. Prove it: a small and a large refund
 
 CLI `naturali create-agent-generation` · SDK `naturali.agents.createAgentGeneration`
 
 ```bash
 curl -sS -X POST \
-  "$NATURALI_API/projects/$PROJECT/agents/$AGENT/generate?wait=true" \
+  "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/generate?wait=true" \
   -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H 'Content-Type: application/json' \
+  -H "Content-Type: application/json" \
   -d '{ "messages": [{ "role": "user", "content": "Refund order 1001: $40." }] }'
 ```
 
@@ -205,15 +161,8 @@ curl -sS -X POST \
   "output": { "content": "The refund for order 1001 in the amount of $40 has been processed successfully." } }
 ```
 
-`A`: the tool ran unattended. Now the same call for $400:
-
-```bash
-curl -sS -X POST \
-  "$NATURALI_API/projects/$PROJECT/agents/$AGENT/generate?wait=true" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{ "messages": [{ "role": "user", "content": "Refund order 1002: $400." }] }'
-```
+`A`: the tool ran with nobody involved. The same call with
+`"Refund order 1002: $400."`:
 
 ```json
 { "id": "gen_TBcvldVPdTcjWclu", "status": "completed",
@@ -225,79 +174,19 @@ export GENERATION=gen_TBcvldVPdTcjWclu
 ```
 
 - The generation **completes** but the tool did not run: the agent got a
-  `pending_approval` tool result and an item was filed on the approvals queue.
+  `pending_approval` tool result and an item was filed on the approvals
+  queue (`origin: "tool_call"`, `policy_version: "guard_WwusNpQOzrgblxuA@1"`,
+  the frozen `arguments`). Settle it with `naturali-settle-an-approval`.
+- A direct call of the gated tool (`naturali-call-a-tool-directly`) with a
+  large amount answers `422 TOOL_DISPATCH_FAILED`: that route cannot wait
+  for a person.
+- `on_approval_expiry` on `Agent` decides what an unsettled item does when it
+  expires: `terminate` (default) ends the chain, `react` tells the agent.
 
-CLI `naturali list-approvals` · SDK `naturali.approvals.listApprovals`
-
-```bash
-curl -sS "$NATURALI_API/projects/$PROJECT/approvals?status=pending" \
-  -H "Authorization: Bearer $NATURALI_TOKEN"
-```
-
-```json
-{
-  "data": [{
-    "id": "apr_diGdFF6EmxwsBlJ8", "origin": "tool_call", "status": "pending",
-    "proposed_action": { "tool_id": "tool_NzCBgtWBAG7QkiaJ", "action": "issue-refund",
-                         "arguments": { "amount": 400, "order_id": "1002" } },
-    "policy_version": "guard_WwusNpQOzrgblxuA@1",
-    "expires_at": "2026-10-04T01:34:56.916Z"
-  }],
-  "total": 1
-}
-```
-
-```bash
-export APPROVAL=apr_diGdFF6EmxwsBlJ8
-```
-
-- `proposed_action.arguments` are frozen: approving executes exactly these.
-- `policy_version` names the guardrail version that held the call.
-- An item not settled by `expires_at` can never be approved.
-
-## 6. Approve the held refund
-
-CLI `naturali approve-approval` · SDK `naturali.approvals.approveApproval`
-
-```bash
-curl -sS -X POST \
-  "$NATURALI_API/projects/$PROJECT/approvals/$APPROVAL/approve" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{}'
-```
-
-```json
-{ "id": "apr_diGdFF6EmxwsBlJ8", "status": "approved", "resolved_by": "user_7x9yZtYrtTbPXbx0", "edited_arguments": null }
-```
-
-Approving runs the tool with the frozen arguments (the guardrail is not asked
-again) and starts a continuation generation linked to the one that proposed
-the call.
-
-- Rejecting instead is `POST /v1/projects/{project_id}/approvals/{approval_id}/reject`
-  with a `reason`: it runs nothing and tells the agent why.
-
-CLI `naturali list-generations` · SDK `naturali.generations.listGenerations`
-
-```bash
-curl -sS \
-  "$NATURALI_API/projects/$PROJECT/generations?initiator_generation_id=$GENERATION" \
-  -H "Authorization: Bearer $NATURALI_TOKEN"
-```
-
-```json
-{ "data": [{ "id": "gen_5EHZBqKyhI6h6O23", "initiator_generation_id": "gen_TBcvldVPdTcjWclu",
-             "status": "completed", "stop_reason": "stop" }], "total": 1 }
-```
-
-Done when the continuation is `completed`: the held refund was executed and
-the agent told. Its transcript opens with "Approval apr_diGdFF6EmxwsBlJ8 … was
-approved. The action has been executed. Result: …" and ends with the agent's
-reply.
+Done when the $40 call executes and the $400 call leaves a `pending` item.
 
 ## Related skills
 
-- `naturali-pause-a-run-for-a-human-decision` — a fixed approval step in an orchestration, for a call that always needs a person.
-- `naturali-limit-what-an-agent-may-do` — refuse an action outright with a boundary policy instead of asking a person.
-- `naturali-deploy-a-system-from-a-template` — formations in depth: plan, update, teardown.
+- `naturali-settle-an-approval` — approve, edit or reject the held call and find the agent's continuation.
+- `naturali-pause-a-run-for-a-human-decision` — a fixed approval step for a call that always needs a person.
+- `naturali-limit-what-an-agent-may-do` — refuse an action outright with a boundary policy.

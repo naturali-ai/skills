@@ -1,6 +1,6 @@
 ---
 name: naturali-gate-a-rollout-on-an-eval
-description: Declare a naturali.ai dataset and eval in a formation template and deploy it, write a new agent version through the same kind of template update, start a staged rollout with a promotion_gate that refuses to promote a new agent version until an eval run pinned to that version passes, produce that run, promote, and read the eval_run_id recorded on the version. Use when asked to require a passing eval before promoting a canary, block an agent release until tests pass, fix a PROMOTION_GATE_UNMET error, pin an eval run to an agent_version, or see which eval cleared a naturali agent version.
+description: Make a naturali.ai staged rollout refuse to promote until an eval run pinned to the new agent version passes - declare the gate eval, start the release with promotion_gate, run the eval with agent_version, promote, and read the clearing run's id on the promoted version. Use when asked to gate, block or protect a release or canary on a test suite, require a passing eval before promotion, set promotion_gate, or when promote answers 409 PROMOTION_GATE_UNMET or the eval passed but the gate stays closed.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -10,169 +10,72 @@ metadata:
 # Gate a rollout on an eval
 
 Outcome: a staged rollout that refuses to promote until an eval run pinned to
-the new version passes — and a new version that went live with that run
-recorded beside it.
+the new version passes — and a promoted version that records that run.
 
 ## Before you start
 
-- `NATURALI_TOKEN` — a `nat_sk_…` project API key.
-- `PROJECT`, `PROVIDER`, `AGENT` and `FORMATION` (with its `agent.yaml`) —
-  the agent and the formation that declared it, from
-  `naturali-first-agent-generation` (instructions *Answer in one sentence. If
-  you are unsure, say so.*), at `version` 1 with no rollout running. If you did
-  `naturali-roll-out-an-agent-version`, use its current version as
-  `stable_version` in step 3 and step 2's version as `canary_version`.
-- `jq`, to put the template file into the JSON body.
-- Four model calls in all (one generation and one judge call per case, two runs).
+- `NATURALI_TOKEN` — a `nat_sk_…` project API key; `PROJECT` — the project id.
+- `Agent` and `Provider` in `naturali.yaml` (`naturali-create-an-agent`), with
+  `AGENT` exported, at version 1 with no rollout running. Otherwise use its
+  current version as stable below.
+- `Cases`, a dataset with the cases the new version must pass, from
+  `naturali-build-an-eval-dataset`.
+- Each eval run generates once per case and the judge grades once per case.
 
-Ids below are examples; use the ones your own calls return. Every call is also
-a CLI command (`naturali <operationId-kebab>`) and an SDK method
-(`naturali.<module>.<operationId>`), named under each step.
+Ids below are examples; use the ones your own calls return.
 
-## 1. Declare the dataset, the case and the eval
+## 1. Declare the gate eval
 
-The rollout will name this eval as its gate. `pass_threshold: 1` means every
-case must pass; `llm_judge` needs a model of its own, here `ai_provider_id`.
-Save as `refund-gate.yaml`:
+The eval is what the release names as its gate. `pass_threshold: 1` means every
+case must pass. Add to `naturali.yaml`:
 
 ```yaml
-parameters:
-  AgentId:
-    type: string
-  ProviderId:
-    type: string
 resources:
-  Dataset:
-    type: dataset
-    properties:
-      name: refund-policy
-      description: Answers the refund policy must keep right
-  RefundCase:
-    type: dataset_item
-    properties:
-      dataset_id:
-        ref: Dataset
-      input:
-        - role: user
-          content: What is our refund window?
-      expected_output: Refunds are accepted within 30 days of purchase.
-  RefundGate:
+  Gate:
     type: eval
     properties:
       name: refund-gate
-      agent_id:
-        param: AgentId
-      dataset_id:
-        ref: Dataset
+      agent_id: { ref: Agent }
+      dataset_id: { ref: Cases }
       pass_threshold: 1
       scorers:
         - type: llm_judge
+          ai_provider_id: { ref: Provider }
+          pass_threshold: 0.7
           prompt: >-
             Rate 0-1 how well the answer matches the reference. Answer with
             {"score": <0-1>, "reasoning": "<why>"}. Question: {{input}}
             Answer: {{output}} Reference: {{expected}}
-          pass_threshold: 0.7
-          ai_provider_id:
-            param: ProviderId
 outputs:
-  dataset_id:
-    ref: Dataset
-  eval_id:
-    ref: RefundGate
+  gate_eval_id: { ref: Gate }
 ```
 
-Validate (creates nothing), then deploy:
-
-CLI `naturali validate-formation` · SDK `naturali.formations.validateFormation`
+Apply it with `naturali-deploy-a-formation`, then:
 
 ```bash
-curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/formations/validate" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -Rn --rawfile t refund-gate.yaml '{template: $t}')"
-```
-
-```json
-{ "valid": true, "errors": [], "warnings": [] }
-```
-
-CLI `naturali create-formation` · SDK `naturali.formations.createFormation`
-
-```bash
-curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/formations" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -Rn --rawfile t refund-gate.yaml --arg a "$AGENT" --arg p "$PROVIDER" \
-        '{name: "refund-gate", template: $t, parameters: {AgentId: $a, ProviderId: $p}}')"
-```
-
-```json
-{ "id": "form_Tz6mR1vKe8YqW3hN", "status": "active", "error": null,
-  "outputs": { "dataset_id": "dset_SQlIIzyfjZ8RfnWp", "eval_id": "eval_RPMTrH6wp2eHPrC1" } }
-```
-
-```bash
-export DATASET=dset_SQlIIzyfjZ8RfnWp
 export EVAL=eval_RPMTrH6wp2eHPrC1
 ```
 
-- Check `error` as well as `status`: an `active` formation can still carry one.
-- Only when the user asks for direct calls: `POST …/datasets` (CLI
-  `naturali create-dataset` · SDK `naturali.evaluations.createDataset`),
-  `POST …/datasets/{dataset_id}/items` (CLI `naturali create-dataset-item` ·
-  SDK `naturali.evaluations.createDatasetItem`), `POST …/evals` (CLI
-  `naturali create-eval` · SDK `naturali.evaluations.createEval`), each with the
-  same properties as the body.
+- Scorer choices and thresholds are in `naturali-score-an-agent-change`.
+- Without a formation (only when the user asks): `POST …/evals` with the same
+  properties (CLI `naturali create-eval` · SDK `naturali.evaluations.createEval`).
 
 ## 2. Write the new version
 
-Give the agent the policy in the formation that declared it. The update
-archives version 2; nothing serves it yet. In `agent.yaml`:
-
-```yaml
-      instructions: "Answer in one sentence. Our refund policy: refunds are accepted within 30 days of purchase. If you are unsure, say so."
-```
-
-Plan the change (creates nothing), then apply it:
-
-CLI `naturali plan-formation` · SDK `naturali.formations.planFormation`
-
-```bash
-curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/formations/plan" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -Rn --rawfile t agent.yaml --arg f "$FORMATION" --arg p "$PROVIDER" \
-        '{formation_id: $f, template: $t, parameters: {ProviderId: $p}}')"
-```
+Edit `Agent` in `naturali.yaml` (e.g. give it the refund policy) and apply it
+with `naturali-deploy-a-formation`. The plan reads:
 
 ```json
-{ "changes": [{ "logical_id": "Agent", "resource_type": "agent", "action": "update",
-  "physical_resource_id": "agent_gCmLeRABaJYLeM2Z" }] }
+{ "changes": [{ "logical_id": "Agent", "resource_type": "agent", "action": "update" }] }
 ```
 
-CLI `naturali update-formation` · SDK `naturali.formations.updateFormation`
-
-```bash
-curl -X PUT "https://api.naturali.ai/v1/projects/$PROJECT/formations/$FORMATION" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -Rn --rawfile t agent.yaml --arg p "$PROVIDER" \
-        '{template: $t, parameters: {ProviderId: $p}}')"
-```
-
-```json
-{ "id": "form_EPis15Nfukary167", "status": "active", "error": null,
-  "outputs": { "agent_id": "agent_gCmLeRABaJYLeM2Z" } }
-```
-
-- The agent keeps its id, at `version` 2 with `active_release: null`.
-- Only when the user asks for direct calls: `PATCH …/agents/{agent_id}` with
-  `instructions` (CLI `naturali patch-agent` · SDK `naturali.agents.patchAgent`).
+The agent keeps its id and moves to `version: 2`; with no release running it
+serves all traffic until step 3 splits it.
 
 ## 3. Start a gated rollout
 
-Traffic splits exactly as without a gate; `promotion_gate` only decides how the
-rollout may end.
+Traffic splits exactly as without a gate (`naturali-roll-out-an-agent-version`);
+the gate only decides how the rollout may end.
 
 CLI `naturali set-agent-release` · SDK `naturali.agentVersions.setAgentRelease`
 
@@ -184,13 +87,20 @@ curl -X PUT "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/release"
 ```
 
 ```json
-{ "version": 2,
-  "active_release": { "stable_version": 1, "canary_version": 2, "canary_percent": 10, "promotion_gate": "eval_RPMTrH6wp2eHPrC1" } }
+{
+  "id": "agent_gCmLeRABaJYLeM2Z",
+  "version": 2,
+  "active_release": {
+    "stable_version": 1,
+    "canary_version": 2,
+    "canary_percent": 10,
+    "promotion_gate": "eval_RPMTrH6wp2eHPrC1"
+  }
+}
 ```
 
-- The gate must be an eval of this agent in this project; anything else is a `400`.
-- The release has its own route; it is not a template property, so it stays a
-  direct call (as do promote and eval runs, which are actions).
+- The gate must be an eval of this agent in this project; anything else is a
+  `400`. `null` or omitted means promote at will.
 
 ## 4. Try to promote
 
@@ -205,33 +115,21 @@ curl -X POST \
 `409`:
 
 ```json
-{ "error": { "code": "PROMOTION_GATE_UNMET",
-  "meta": { "promotion_gate": "eval_RPMTrH6wp2eHPrC1", "agent_version": 2 } } }
+{
+  "error": {
+    "code": "PROMOTION_GATE_UNMET",
+    "message": "Promotion gate 'eval_RPMTrH6wp2eHPrC1' has no passing eval run against version 2 of agent 'agent_gCmLeRABaJYLeM2Z'.",
+    "meta": { "promotion_gate": "eval_RPMTrH6wp2eHPrC1", "agent_version": 2 }
+  }
+}
 ```
 
 The rollout keeps running untouched: 10% of traffic still gets version 2.
 
-## 5. Run the eval without a version
+## 5. Run the eval against the canary
 
-A run naming no `agent_version` measures the release's stable version.
-
-CLI `naturali start-eval-run` · SDK `naturali.evaluations.startEvalRun`
-
-```bash
-curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/evals/$EVAL/runs" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "wait": true }'
-```
-
-```json
-{ "id": "evrun_4IKmAxJsIFNWDsba", "agent_version": 1, "status": "completed", "passed": false }
-```
-
-- Even had it passed, it could not open the gate: only a run pinned to the
-  canary version counts.
-
-## 6. Run the eval against the new version
+Pin the run with `agent_version`: the whole run uses that one configuration,
+whatever the traffic split.
 
 CLI `naturali start-eval-run` · SDK `naturali.evaluations.startEvalRun`
 
@@ -243,16 +141,31 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/evals/$EVAL/runs" \
 ```
 
 ```json
-{ "id": "evrun_T8ZROCSa4dTvZ7H4", "agent_version": 2, "status": "completed",
-  "aggregate_scores": { "pass_rate": 1, "scored_item_count": 1 }, "passed": true }
+{
+  "id": "evrun_T8ZROCSa4dTvZ7H4",
+  "eval_id": "eval_RPMTrH6wp2eHPrC1",
+  "agent_version": 2,
+  "status": "completed",
+  "aggregate_scores": {
+    "scorers": { "llm_judge": { "mean": 0.8, "pass_rate": 1 } },
+    "pass_rate": 1,
+    "scored_item_count": 1
+  },
+  "passed": true
+}
 ```
 
-`status: completed`, `passed: true`, `agent_version: 2` — the three things the
-gate checks.
+- `status: completed`, `passed: true`, `agent_version` = the canary: the three
+  things the gate checks.
+- A run with **no** `agent_version` measures the release's **stable** version
+  (it answers `agent_version: 1`). Even passing, it cannot open the gate.
+- Over 25 cases, drop `wait` and poll the run (`naturali-score-open-ended-answers`).
+- A failing run leaves the gate shut: fix the agent (a new version), set the
+  release again with that version as canary, and re-run pinned to it.
 
-## 7. Promote
+## 6. Promote
 
-The same call as step 4.
+The same call as step 4 now succeeds.
 
 CLI `naturali promote-agent-release` · SDK `naturali.agentVersions.promoteAgentRelease`
 
@@ -263,12 +176,17 @@ curl -X POST \
 ```
 
 ```json
-{ "version": 2, "active_release": null }
+{
+  "id": "agent_gCmLeRABaJYLeM2Z",
+  "instructions": "Answer in one sentence. Our refund policy: refunds are accepted within 30 days of purchase. If you are unsure, say so.",
+  "version": 2,
+  "active_release": null
+}
 ```
 
 Version 2 now serves all traffic.
 
-## 8. Read the evidence on the version
+## 7. Read the evidence on the version
 
 CLI `naturali list-agent-versions` · SDK `naturali.agentVersions.listAgentVersions`
 
@@ -278,17 +196,24 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/versions" \
 ```
 
 ```json
-{ "data": [
-    { "version": 2, "eval_run_id": "evrun_T8ZROCSa4dTvZ7H4" },
-    { "version": 1, "eval_run_id": null }
-  ], "total": 2 }
+{
+  "data": [
+    { "id": "agver_m7PsncJPs9ePvgbu", "version": 2, "label": null, "eval_run_id": "evrun_T8ZROCSa4dTvZ7H4" },
+    { "id": "agver_ldzzwXGEy09kNAvK", "version": 1, "label": null, "eval_run_id": null }
+  ],
+  "total": 2
+}
 ```
 
-Done when promote answers with `active_release: null` and version 2's
-`eval_run_id` is the run from step 6.
+`eval_run_id` on version 2 is the run from step 5: anyone reading the history
+later can open it and see what the version was measured against. It is null on
+every version that did not go live through a gated promotion.
+
+Done when promote returns `active_release: null` and the promoted version
+carries the clearing run's `eval_run_id`.
 
 ## Related skills
 
-- `naturali-score-an-agent-change` — more cases, other scorers, per-scorer deltas against a baseline.
-- `naturali-deploy-a-system-from-a-template` — ship datasets and evals beside the agent they verify.
-- `naturali-run-an-agent-on-a-schedule` — a trigger can target an eval, so the gate keeps being fed.
+- `naturali-roll-out-an-agent-version` — the ungated release: split, read versions, abort.
+- `naturali-score-an-agent-change` — more cases, other scorers, per-scorer deltas against a baseline run.
+- `naturali-run-an-agent-on-a-schedule` — a trigger can target an eval so the gate keeps being fed.

@@ -1,6 +1,6 @@
 ---
 name: naturali-enable-naturali-models
-description: Create a naturali.ai project, list the managed model catalog with prices, declare one naturali_ai_provider in a formation template and deploy it to enable every managed model, and prove each one is priced and ready to generate. Use when asked to set up a naturali project with no vendor key, enable naturali models, use managed models, list available naturali models or their prices, or create a provider with provider naturali.
+description: Give a naturali.ai project every naturali-managed model with no vendor account or credential - list the model catalog and its prices, declare one naturali_ai_provider as Provider in naturali.yaml, and prove it is priced for every model it serves. Use when asked to use naturali models, managed models or the catalog, set up a provider with no API key, list available models or their prices, create a provider naturali, or when a deploy fails with catalog_not_ready, managed_source_unavailable or 400 bad_request on a model from another source.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -9,170 +9,139 @@ metadata:
 
 # Enable naturali models
 
-Outcome: a project that can generate on any naturali-managed model, with no
-model-vendor account and no credential of your own.
+Outcome: a `Provider` in the project that generates on naturali's own model
+access, priced and metered for every catalog model its source serves.
 
 ## Before you start
 
-- `NATURALI_TOKEN` — an **account**-scoped `nat_sk_…` API key (or a session
-  JWT). No vendor key is needed.
-- A client: CLI `pnpm add -g @naturali/cli` (reads `NATURALI_TOKEN` from the
-  environment), or SDK `pnpm add @naturali/sdk` with
-  `new NaturaliClient({ token: process.env.NATURALI_TOKEN })`, or plain curl.
-- `jq`, to put the template file into the JSON body.
-- Bringing your own vendor credential instead? Use
-  `naturali-create-a-provider`; the two paths are independent and a project
-  can use both.
+- `NATURALI_TOKEN` — a `nat_sk_…` project API key; `PROJECT` — the project id,
+  from `naturali-create-a-project`.
+- `naturali.yaml`, applied with `naturali-deploy-a-formation`.
+- Bringing your own vendor key instead? Use
+  `naturali-bring-your-own-model-key`; a project can use both.
 
-Ids below are examples; use the ones your own calls return. Every call is also
-a CLI command (`naturali <operationId-kebab>`) and an SDK method
-(`naturali.<module>.<operationId>`), named under each step.
+Ids below are examples; use the ones your own calls return.
 
-## 1. Create a project
+## 1. See what naturali offers
 
-- A project-scoped key cannot create a project: this answers
-  `403 access_denied`. With one, skip this step and export the `PROJECT` it is
-  scoped to.
-
-CLI `naturali create-project` · SDK `naturali.projects.createProject`
-
-```bash
-curl -X POST https://api.naturali.ai/v1/projects \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "name": "getting started" }'
-```
-
-```json
-{ "id": "proj_V1StGXR8Z5jdHi6B", "role": "owner", "status": "active" }
-```
-
-You are its `owner` and its billing owner.
-
-```bash
-export PROJECT=proj_V1StGXR8Z5jdHi6B
-```
-
-## 2. See what naturali offers
-
-The catalog is the same for every project, synced daily.
+The catalog is the same for every project, synced daily against each source's
+listing and published prices.
 
 CLI `naturali list-models` · SDK `naturali.models.listModels`
 
 ```bash
-curl -G https://api.naturali.ai/v1/models \
+curl -sS -G https://api.naturali.ai/v1/models \
   -H "Authorization: Bearer $NATURALI_TOKEN" \
   -d status=available
 ```
 
 ```json
 {
-  "data": [{ "model": "nova-lite-v1", "status": "available",
-    "pricing": { "currency": "usd", "input_per_1k_tokens": 0.00006, "output_per_1k_tokens": 0.00024 } }],
+  "data": [
+    {
+      "model": "nova-lite-v1",
+      "vendor": "amazon",
+      "input_modalities": ["text", "image", "video"],
+      "output_modalities": ["text"],
+      "status": "available",
+      "pricing": { "currency": "usd", "input_per_1k_tokens": 0.00006, "output_per_1k_tokens": 0.00024 }
+    }
+  ],
   "next_cursor": "Z3B0LW9zcy1zYWZlZ3VhcmQtMjBi"
 }
 ```
 
-- Paginated: pass `next_cursor` back as `cursor` until it is `null`.
-- `model` is the string used everywhere a model is named (`default_model`, an
-  agent's `model`); `pricing` is per 1K tokens.
-- A model naturali cannot price, or one that does not produce text, is not
-  listed; use `naturali-create-a-provider` for those.
+- Paginated: pass `next_cursor` back as `cursor` until it is `null`. Other
+  filters: `vendor`, `modality`.
+- `model` is the one name used everywhere a model is named — a provider's
+  `default_model`, an agent's `model`. `pricing` is per 1K tokens.
+- A model naturali cannot price, or one that does not output text, is not
+  listed; reach it with `naturali-bring-your-own-model-key`.
 
-## 3. Enable them
+## 2. Declare the provider
 
-Declare one `naturali_ai_provider` in a formation — no credential, priced for
-the whole catalog the moment it exists. Save as `provider.yaml`:
+Add to `naturali.yaml`:
 
 ```yaml
 resources:
-  Managed:
+  Provider:
     type: naturali_ai_provider
     properties:
       name: naturali
       default_model: nova-lite-v1
 outputs:
   ai_provider_id:
-    ref: Managed
+    ref: Provider
 ```
 
-Validate (creates nothing), then deploy:
-
-CLI `naturali validate-formation` · SDK `naturali.formations.validateFormation`
+Apply it with `naturali-deploy-a-formation`. The plan for a new formation shows
+`{ "logical_id": "Provider", "resource_type": "naturali_ai_provider", "action": "create" }`.
 
 ```bash
-curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/formations/validate" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -Rn --rawfile t provider.yaml '{template: $t}')"
+export PROVIDER=aip_NzjzJDzoId8cm1Hu   # outputs.ai_provider_id
 ```
 
-```json
-{ "valid": true, "errors": [], "warnings": [] }
-```
-
-CLI `naturali create-formation` · SDK `naturali.formations.createFormation`
-
-```bash
-curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/formations" \
-  -H "Authorization: Bearer $NATURALI_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$(jq -Rn --rawfile t provider.yaml '{name: "naturali-models", template: $t}')"
-```
-
-```json
-{ "id": "form_EPis15Nfukary167", "status": "active", "error": null,
-  "outputs": { "ai_provider_id": "aip_NzjzJDzoId8cm1Hu" } }
-```
-
-- Check `error` as well as `status`: an `active` formation can still carry one.
-- `default_model` must be a catalog `model` listed as `available`; it is the
-  fallback for agents that name no model, and it picks which vendor serves
-  this provider. Moving it to a model another source serves replaces the
-  provider rather than editing it.
-- One-time per project, not per model: models that join the catalog later are
-  priced onto this provider automatically.
-- To change it later, edit `provider.yaml`, `POST …/formations/plan` with
-  `formation_id`, then `PUT …/formations/{formation_id}`.
-- Only when the user asks for direct calls: `POST …/ai-providers` with
-  `"provider": "naturali"` plus `name` and `default_model` (CLI
+- Two properties only. `secret_id`, `config` and `base_url` are refused, not
+  ignored: it runs on naturali's access. `name` defaults to `naturali` (or
+  `naturali-vertex` for a Vertex-served model).
+- `default_model` must be a catalog `model` listed `available` (the vendor's own
+  invocation string is refused). It is the fallback for agents that name no
+  model, and it decides which source serves the provider — you never name the
+  source.
+- One provider per source. An agent or route target naming a model of another
+  source is `400 bad_request` (`details.model`, `source`, `provider_source`);
+  add a second `naturali_ai_provider` whose `default_model` is from that source.
+- Moving `default_model` to another source replaces the provider (new id, every
+  `ref` re-pointed); a rename or a same-source model is an in-place update.
+- One-time per project: models that join the catalog later are priced onto the
+  same provider automatically.
+- `catalog_not_ready` (catalog not synced yet) and `managed_source_unavailable`
+  (that model's source is not configured here) are not a wrong value: retry
+  later, or pick a model from another source.
+- Without a formation (only when the user asks): `POST …/ai-providers` with
+  `"provider": "naturali"`, `name` and `default_model` (CLI
   `naturali create-ai-provider` · SDK `naturali.aiProviders.createAiProvider`).
 
-```bash
-export PROVIDER_FORMATION=form_EPis15Nfukary167
-export PROVIDER=aip_NzjzJDzoId8cm1Hu
-```
-
-## 4. Validate it
+## 3. Prove it is priced
 
 CLI `naturali get-ai-provider-prices` · SDK `naturali.aiProviders.getAiProviderPrices`
 
 ```bash
-curl "https://api.naturali.ai/v1/projects/$PROJECT/ai-providers/$PROVIDER/prices" \
+curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/ai-providers/$PROVIDER/prices" \
   -H "Authorization: Bearer $NATURALI_TOKEN"
 ```
 
 ```json
 {
-  "prices": [{ "provider": "bedrock", "model": "nova-lite-v1",
-    "component": "input_tokens", "unit": "token", "unit_price": 6.000000000000001e-8 }]
+  "prices": [
+    {
+      "ai_provider_id": "aip_NzjzJDzoId8cm1Hu",
+      "meter_type": "llm_tokens",
+      "provider": "bedrock",
+      "model": "nova-lite-v1",
+      "component": "input_tokens",
+      "unit": "token",
+      "unit_price": 6.000000000000001e-8
+    }
+  ]
 }
 ```
 
 - One row per model per priced component (`input_tokens`, `output_tokens`,
-  `cached_tokens` where priced), all with the same `provider`. `unit_price` is
-  per token; the catalog quotes per 1K.
-- Only models served the way `default_model` is are priced here; a model served
-  another way (e.g. Gemini) needs a second provider whose `default_model` is
-  one of them.
-- An empty list means the provider was created but not priced: delete the
-  formation (`DELETE …/formations/{formation_id}`, CLI `naturali delete-formation`
-  · SDK `naturali.formations.deleteFormation`) and deploy again.
+  `cached_tokens` where priced), all the same `provider`. `unit_price` is per
+  token; the catalog quotes per 1K.
+- Only models of the same source as `default_model` are priced here (Gemini,
+  for example, needs a second provider).
+- An empty list means the provider exists but was never priced: remove
+  `Provider` from the template, apply, add it back and apply again.
+- The price book is read-only: `PUT …/prices` on a managed provider is `403
+  managed_price_book_read_only`.
 
-Done when `prices` holds a row for every managed model the provider's vendor
-serves.
+Done when `prices` holds rows for the models you plan to use.
 
 ## Related skills
 
-- `naturali-first-agent-generation` — create an agent on this provider and run it.
-- `naturali-create-a-provider` — the bring-your-own-key path instead.
+- `naturali-create-an-agent` — an agent on `Provider`.
+- `naturali-run-a-generation` — prove a model answers.
+- `naturali-bring-your-own-model-key` — your own credential instead, or beside it.
+- `naturali-deploy-a-formation` — apply the template.

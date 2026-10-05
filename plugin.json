@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "naturali",
+  "description": "Build, run and audit AI agents on naturali.ai: one skill per tutorial step, plus the naturali MCP server.",
+  "author": { "name": "naturali.ai", "url": "https://naturali.ai" },
+  "homepage": "https://naturali.ai",
+  "repository": "https://github.com/naturali-ai/skills",
+  "license": "Apache-2.0",
+  "keywords": ["ai-agents", "agent-skills", "mcp", "naturali"]
+}

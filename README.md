@@ -26,6 +26,10 @@ Claude Code:
 Any agent that reads Agent Skills: copy the directories under `skills/` into
 its skills folder (for Claude Code, `~/.claude/skills/`).
 
+Any client that reads [Agent Plugins](https://agent-plugins.org/specification):
+this repository is one, with `plugin.json`, the skills and the naturali MCP
+server in `mcp.json`.
+
 Every skill expects a `nat_sk_…` project API key in `NATURALI_TOKEN`.
 
 ## Skills

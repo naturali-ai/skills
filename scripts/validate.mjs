@@ -48,6 +48,21 @@ for (const dir of names) {
   }
 }
 
+const manifests = {
+  'plugin.json': 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
+  'mcp.json': 'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json',
+};
+for (const [file, schema] of Object.entries(manifests)) {
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(join(import.meta.dirname, '..', file), 'utf8'));
+  } catch (error) {
+    errors.push(`${file}: ${error.message}`);
+    continue;
+  }
+  if (manifest.$schema !== schema) errors.push(`${file}: $schema must be ${schema}`);
+}
+
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

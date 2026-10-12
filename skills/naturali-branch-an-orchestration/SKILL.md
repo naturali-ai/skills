@@ -4,7 +4,7 @@ description: Make a naturali.ai orchestration route each message on a classifica
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/branch-an-orchestration
+  source: https://naturali.ai/docs/tutorials/branch-an-orchestration
 ---
 
 # Branch an orchestration

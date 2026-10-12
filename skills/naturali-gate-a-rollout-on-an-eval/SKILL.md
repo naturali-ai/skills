@@ -4,7 +4,7 @@ description: Make a naturali.ai staged rollout refuse to promote until an eval r
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/gate-a-rollout-on-an-eval
+  source: https://naturali.ai/docs/tutorials/gate-a-rollout-on-an-eval
 ---
 
 # Gate a rollout on an eval

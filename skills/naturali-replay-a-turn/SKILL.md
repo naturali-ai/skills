@@ -4,7 +4,7 @@ description: Re-answer one turn of a real naturali.ai conversation on its exact 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/replay-a-bad-answer
+  source: https://naturali.ai/docs/tutorials/replay-a-bad-answer
 ---
 
 # Replay a turn

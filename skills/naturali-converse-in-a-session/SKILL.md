@@ -4,7 +4,7 @@ description: Hold a multi-turn conversation with a naturali.ai agent in a sessio
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/replay-a-bad-answer
+  source: https://naturali.ai/docs/tutorials/replay-a-bad-answer
 ---
 
 # Converse in a session

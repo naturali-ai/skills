@@ -4,7 +4,7 @@ description: Put a JSON Logic guardrail on a risky naturali.ai tool so small cal
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/gate-a-tool-with-guardrails
+  source: https://naturali.ai/docs/tutorials/gate-a-tool-with-guardrails
 ---
 
 # Gate a tool with guardrails

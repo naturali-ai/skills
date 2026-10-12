@@ -4,7 +4,7 @@ description: Write, validate, deploy, plan, update and tear down a naturali.ai f
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/deploy-a-system-from-a-template
+  source: https://naturali.ai/docs/tutorials/deploy-a-system-from-a-template
 ---
 
 # Deploy a formation

@@ -4,7 +4,7 @@ description: Give a naturali.ai project every naturali-managed model with no ven
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/enable-naturali-models
+  source: https://naturali.ai/docs/tutorials/enable-naturali-models
 ---
 
 # Enable naturali models

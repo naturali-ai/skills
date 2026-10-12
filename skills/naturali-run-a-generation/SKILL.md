@@ -4,7 +4,7 @@ description: Run a naturali.ai agent once, in the background (202 and a generati
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/first-agent-generation
+  source: https://naturali.ai/docs/tutorials/first-agent-generation
 ---
 
 # Run a generation

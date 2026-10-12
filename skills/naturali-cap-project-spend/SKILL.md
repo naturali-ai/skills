@@ -4,7 +4,7 @@ description: Put a token budget on a whole naturali.ai project - size it from da
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/cap-project-spend
+  source: https://naturali.ai/docs/tutorials/cap-project-spend
 ---
 
 # Cap a project's spend

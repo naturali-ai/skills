@@ -4,7 +4,7 @@ description: Use your own model vendor credential (OpenAI, Anthropic, Google, Be
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/create-a-provider
+  source: https://naturali.ai/docs/tutorials/create-a-provider
 ---
 
 # Bring your own model key

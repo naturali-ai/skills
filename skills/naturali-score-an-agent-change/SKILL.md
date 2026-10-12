@@ -4,7 +4,7 @@ description: Measure whether a naturali.ai agent change is good enough to ship w
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/score-an-agent-change
+  source: https://naturali.ai/docs/tutorials/score-an-agent-change
 ---
 
 # Score an agent change

@@ -4,7 +4,7 @@ description: Constrain a naturali.ai agent to a JSON Schema with output_schema s
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/structured-output
+  source: https://naturali.ai/docs/tutorials/structured-output
 ---
 
 # Return structured output

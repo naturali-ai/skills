@@ -4,7 +4,7 @@ description: Give a teammate access to a naturali.ai project by email, even with
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/invite-a-colleague
+  source: https://naturali.ai/docs/tutorials/invite-a-colleague
 ---
 
 # Invite a colleague

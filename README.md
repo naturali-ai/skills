@@ -4,7 +4,7 @@
 agents on [naturali.ai](https://naturali.ai).
 
 Each skill is one atomic module taken from the
-[naturali.ai tutorials](https://docs.naturali.ai/docs/tutorials): the commands
+[naturali.ai tutorials](https://naturali.ai/docs/tutorials): the commands
 that deliver one result, reusable on their own. A module several tutorials
 share (create an agent, run a generation, settle an approval) is one skill.
 

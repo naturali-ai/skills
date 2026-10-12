@@ -4,7 +4,7 @@ description: Give a naturali.ai agent retrieval over the project's documents wit
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/answer-from-your-documents
+  source: https://naturali.ai/docs/tutorials/answer-from-your-documents
 ---
 
 # Ground an agent in documents

@@ -4,7 +4,7 @@ description: Give every end user of a naturali.ai project their own token budget
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/cap-spend-per-end-user
+  source: https://naturali.ai/docs/tutorials/cap-spend-per-end-user
 ---
 
 # Cap spend per end user

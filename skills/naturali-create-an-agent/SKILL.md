@@ -4,7 +4,7 @@ description: Declare a naturali.ai agent (instructions, model, step and sampling
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/first-agent-generation
+  source: https://naturali.ai/docs/tutorials/first-agent-generation
 ---
 
 # Create an agent

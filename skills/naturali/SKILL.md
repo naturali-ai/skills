@@ -29,7 +29,7 @@ a summary of them.
   3.0.3 document. Every operation has a unique `operationId`, typed schemas and
   a typed error body.
 - <https://naturali.ai/llms.txt> — what the product is and when to use it.
-- <https://docs.naturali.ai/llms-full.txt> — every module guide and tutorial
+- <https://naturali.ai/docs/llms-full.txt> — every module guide and tutorial
   inlined. Any docs page is Markdown when `.md` is appended to its URL.
 - <https://naturali.ai/pricing.md> — plans and how model credits work.
 

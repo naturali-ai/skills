@@ -4,7 +4,7 @@ description: Attribute a naturali.ai project's agent spend to each end user with
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/cap-spend-per-end-user
+  source: https://naturali.ai/docs/tutorials/cap-spend-per-end-user
 ---
 
 # Attribute spend to end users

@@ -4,7 +4,7 @@ description: Declare a zero-retention naturali.ai agent (trace_content_mode none
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/keep-no-conversation-content
+  source: https://naturali.ai/docs/tutorials/keep-no-conversation-content
 ---
 
 # Stop storing conversation content

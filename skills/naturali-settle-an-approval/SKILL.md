@@ -4,7 +4,7 @@ description: Approve, edit or reject a held naturali.ai action from the approval
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/gate-a-tool-with-guardrails
+  source: https://naturali.ai/docs/tutorials/gate-a-tool-with-guardrails
 ---
 
 # Settle an approval

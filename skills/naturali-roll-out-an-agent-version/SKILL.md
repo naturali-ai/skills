@@ -4,7 +4,7 @@ description: Serve a new naturali.ai agent version to a share of traffic beside 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/roll-out-an-agent-version
+  source: https://naturali.ai/docs/tutorials/roll-out-an-agent-version
 ---
 
 # Roll out an agent version

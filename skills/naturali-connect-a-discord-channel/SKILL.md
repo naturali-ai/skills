@@ -4,7 +4,7 @@ description: Connect a Discord bot to a naturali.ai agent through a discord chan
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/connect-a-discord-channel
+  source: https://naturali.ai/docs/tutorials/connect-a-discord-channel
 ---
 
 # Connect a Discord channel

@@ -4,7 +4,7 @@ description: Model a naturali.ai review process as a workflow - an agent drafts 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/model-a-process-as-a-workflow
+  source: https://naturali.ai/docs/tutorials/model-a-process-as-a-workflow
 ---
 
 # Model a process as a workflow

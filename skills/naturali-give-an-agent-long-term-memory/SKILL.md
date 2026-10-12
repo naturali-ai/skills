@@ -4,7 +4,7 @@ description: Give a naturali.ai agent long-term memory - a memory store, a memor
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/give-an-agent-long-term-memory
+  source: https://naturali.ai/docs/tutorials/give-an-agent-long-term-memory
 ---
 
 # Give an agent long-term memory

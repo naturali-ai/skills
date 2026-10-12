@@ -4,7 +4,7 @@ description: Declare an http tool (URL placeholders, method, headers, argument J
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/deploy-a-system-from-a-template
+  source: https://naturali.ai/docs/tutorials/deploy-a-system-from-a-template
 ---
 
 # Give an agent an HTTP tool

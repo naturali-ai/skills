@@ -4,7 +4,7 @@ description: Call a naturali.ai tool with no agent or model in the path to tell 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/debug-a-failed-run
+  source: https://naturali.ai/docs/tutorials/debug-a-failed-run
 ---
 
 # Call a tool directly

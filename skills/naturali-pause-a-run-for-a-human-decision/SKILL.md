@@ -4,7 +4,7 @@ description: Add an approval step to a naturali.ai orchestration so each run par
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/pause-a-run-for-a-human-decision
+  source: https://naturali.ai/docs/tutorials/pause-a-run-for-a-human-decision
 ---
 
 # Pause a run for a human decision

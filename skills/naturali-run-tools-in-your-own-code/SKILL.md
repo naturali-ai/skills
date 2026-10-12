@@ -4,7 +4,7 @@ description: Give a naturali.ai agent a client tool that your own code runs - th
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/run-tools-in-your-own-code
+  source: https://naturali.ai/docs/tutorials/run-tools-in-your-own-code
 ---
 
 # Run tools in your own code

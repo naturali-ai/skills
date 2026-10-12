@@ -4,7 +4,7 @@ description: Create a naturali.ai project, the boundary every provider, secret, 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/enable-naturali-models
+  source: https://naturali.ai/docs/tutorials/enable-naturali-models
 ---
 
 # Create a project

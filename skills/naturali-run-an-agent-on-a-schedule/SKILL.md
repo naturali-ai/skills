@@ -4,7 +4,7 @@ description: Put a naturali.ai agent on a cron schedule with a schedule trigger,
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/run-an-agent-on-a-schedule
+  source: https://naturali.ai/docs/tutorials/run-an-agent-on-a-schedule
 ---
 
 # Run an agent on a schedule

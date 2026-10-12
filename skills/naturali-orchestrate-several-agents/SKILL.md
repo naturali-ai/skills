@@ -4,7 +4,7 @@ description: Chain several naturali.ai agents into one orchestration (researcher
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/orchestrate-several-agents
+  source: https://naturali.ai/docs/tutorials/orchestrate-several-agents
 ---
 
 # Orchestrate several agents

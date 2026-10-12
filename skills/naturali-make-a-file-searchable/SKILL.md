@@ -4,7 +4,7 @@ description: Upload a file (Markdown, text, PDF, photo or voice recording) to a 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/answer-from-your-documents
+  source: https://naturali.ai/docs/tutorials/answer-from-your-documents
 ---
 
 # Make a file searchable

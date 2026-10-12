@@ -4,7 +4,7 @@ description: Read back what a naturali.ai agent run did - status, error, version
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/debug-a-failed-run
+  source: https://naturali.ai/docs/tutorials/debug-a-failed-run
 ---
 
 # Read a run

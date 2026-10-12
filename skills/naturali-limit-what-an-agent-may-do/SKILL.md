@@ -4,7 +4,7 @@ description: "Put a boundary_policy on a naturali.ai agent so the platform refus
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/limit-what-an-agent-may-do
+  source: https://naturali.ai/docs/tutorials/limit-what-an-agent-may-do
 ---
 
 # Limit what an agent may do

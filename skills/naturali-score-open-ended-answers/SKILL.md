@@ -4,7 +4,7 @@ description: Grade naturali.ai agent replies that have no single correct wording
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/score-open-ended-answers
+  source: https://naturali.ai/docs/tutorials/score-open-ended-answers
 ---
 
 # Score open-ended answers

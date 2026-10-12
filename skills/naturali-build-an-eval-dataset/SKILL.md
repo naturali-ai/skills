@@ -4,7 +4,7 @@ description: Build a naturali.ai eval dataset from declared test cases and from 
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/score-an-agent-change
+  source: https://naturali.ai/docs/tutorials/score-an-agent-change
 ---
 
 # Build an eval dataset

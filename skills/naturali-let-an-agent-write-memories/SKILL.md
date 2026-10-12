@@ -4,7 +4,7 @@ description: Give a naturali.ai agent a write_memory tool on a memory store (kno
 license: Apache-2.0
 metadata:
   author: naturali.ai
-  source: https://docs.naturali.ai/docs/tutorials/limit-what-an-agent-may-do
+  source: https://naturali.ai/docs/tutorials/limit-what-an-agent-may-do
 ---
 
 # Let an agent write memories

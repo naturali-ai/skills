@@ -109,8 +109,9 @@ Now Blake, under the same quota — the same two calls against
 ```json
 {
   "status": "completed",
-  "message": { "role": "assistant", "content": "You can use a paperclip to hold multiple sheets of paper together." },
-  "generation_id": "gen_ajNWChYJJfP05PFt"
+  "content": "You can use a paperclip to hold multiple sheets of paper together.",
+  "generation_id": "gen_ajNWChYJJfP05PFt",
+  "model": "glm-4.7-flash"
 }
 ```
 

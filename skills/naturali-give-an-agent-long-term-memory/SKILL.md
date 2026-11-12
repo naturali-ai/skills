@@ -39,7 +39,7 @@ resources:
     type: memory_rule
     properties:
       memory_store_id: { ref: Store }
-      on: agents.generation.completed
+      on: generations.completed
       source_agent_ids:
         - ref: Agent
   Agent:
@@ -71,7 +71,7 @@ export STORE=mstore_EisX1nAWTwPPwPBd   # outputs.memory_store_id
   (`null` or omitted = every agent in the project). With no `agent_id` or
   `tool_id` handler, the built-in extractor reads the turn; `prompt`, `model`
   and `ai_provider_id` tune it. The built-in extractor binds only to
-  `agents.generation.completed`; `conversations.message.generated` is for
+  `generations.completed`; `conversation_messages.generated` is for
   custom handlers.
 - The rule lives on the store: the agent gains no tool. A rule never fails or
   blocks the turn it reads.
@@ -130,7 +130,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/memories?memory_store_id=$STO
     { "id": "mem_3j1NM67SfBEEiruo", "memory_store_id": "mstore_EisX1nAWTwPPwPBd",
       "content": "Ana is allergic to almonds.", "invalidated_at": null, "version": 1 }
   ],
-  "total": 1
+  "next_cursor": null
 }
 ```
 
@@ -140,8 +140,9 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/memories?memory_store_id=$STO
   `include_invalidated=true` adds superseded and retracted facts.
 - The same result is on the turn: `GET …/generations/$GENERATION` (CLI
   `naturali get-generation`) carries `extraction` keyed by rule id —
-  `{ "candidates": 1, "created": 1, "skipped": 0, "superseded": 0 }` — and
-  `memory_assertions`, one row per write. See `naturali-read-a-run`.
+  `{ "candidates": 1, "created": 1, "skipped": 0, "superseded": 0 }`; its
+  writes, one row each, are `GET …/generations/$GENERATION/memory-assertions`
+  (CLI `naturali list-generation-memory-assertions`). See `naturali-read-a-run`.
 
 ## 4. Ask in a new conversation
 

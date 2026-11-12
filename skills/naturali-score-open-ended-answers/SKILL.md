@@ -115,7 +115,7 @@ export RUN=evrun_ftyqP9vG4MKu6OMX
 
 ## 3. Poll it to a verdict
 
-Read the run until `status` is terminal: `completed`, `failed` or `canceled`.
+Read the run until `status` is terminal: `completed`, `failed` or `cancelled`.
 
 CLI `naturali get-eval-run` · SDK `naturali.evaluations.getEvalRun`
 
@@ -176,7 +176,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/evals/$EVAL/runs/$RUN/results
       "error": null
     }
   ],
-  "total": 2
+  "next_cursor": null
 }
 ```
 
@@ -188,7 +188,7 @@ opens the full run (`naturali-read-a-run`).
 ## 5. Cancel a run you no longer need
 
 A queued run spends model budget item by item. Cancelling drops the outstanding
-items and settles it `canceled`.
+items and settles it `cancelled`.
 
 CLI `naturali cancel-eval-run` · SDK `naturali.evaluations.cancelEvalRun`
 

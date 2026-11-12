@@ -1,6 +1,6 @@
 ---
 name: naturali-deploy-a-formation
-description: Write, validate, deploy, plan, update and tear down a naturali.ai formation template (naturali.yaml); every naturali skill that creates or changes a resource defers here. Use when asked to deploy, apply, plan, diff, update, inspect, roll back or delete a formation, stack or infrastructure as code, or on unsupported_resource_type, VALIDATION_FAILED, status failed, FORMATION_REPLACE_CLEANUP_FAILED, FORMATION_DELETE_FAILED, FORMATION_INVALID_METADATA, plan_feature_not_included or plan_limit_reached.
+description: Write, validate, deploy, plan, update and tear down a naturali.ai formation template (naturali.yaml); every naturali skill that creates or changes a resource defers here. Use to deploy, apply, plan, diff, update, inspect or delete a formation, stack or infrastructure as code, or on unsupported_resource_type, VALIDATION_FAILED, status failed, FORMATION_REPLACE_CLEANUP_FAILED, FORMATION_DELETE_FAILED, FORMATION_INVALID_METADATA, LITERAL_CREDENTIAL, plan_feature_not_included or plan_limit_reached.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -64,25 +64,41 @@ outputs:
 | `{ ref: LogicalId }` | that resource's id once created; also declares the dependency, so order is derived |
 | `{ param: Name }` | a parameter's value |
 | `{ sub: 'text ${Name}' }` | the string with parameters interpolated |
-| `{ ref_attr: LogicalId.attribute }` | a named attribute of a created resource, in `outputs`; a trigger's `secret` is refused (`400 VALIDATION_FAILED`) |
+| `{ ref_attr: LogicalId.attribute }` | a named attribute of a created resource, in `outputs`; a trigger's or webhook's `secret` is refused (`400 VALIDATION_FAILED`) |
 
 - `properties` must match the type's `<Type>ResourceProperties` schema in
   https://naturali.ai/openapi.json; unknown keys are refused.
-- Declarable types: `actor`, `agent`, `ai_provider`, `naturali_ai_provider`,
-  `channel`, `conversation`, `dataset`, `dataset_item`, `decider`, `document`,
-  `eval`, `file`, `guardrail`, `ingestion_rule`, `memory`, `memory_rule`,
-  `memory_store`, `metadata_schema`, `model_route`, `orchestration`, `quota`,
-  `secret`, `session`, `tool`, `trigger`, `workflow`. Anything else (`api_key`,
-  `chat`, `policy`, `project_price`, `webhook`) is `400
+- Declarable types: `actor`, `agent`, `ai_provider`, `collection`,
+  `conversation`, `dataset`, `dataset_item`, `decider`, `document`, `eval`,
+  `file`, `guardrail`, `ingestion_rule`, `memory`, `memory_rule`,
+  `memory_store`, `metadata_schema`, `model_route`, `oauth_client`,
+  `orchestration`, `playbook`, `policy`, `quota`, `secret`, `session`, `tool`,
+  `trigger`, `workflow`, plus naturali's own `channel`, `mcp_server`,
+  `naturali_ai_provider` and `webhook` (naturali's webhook, not a built-in).
+  Anything else (`api_key`, `chat`, `project_price`) is `400
   unsupported_resource_type`. A project is not declarable.
-- Credentials go in `no_echo` parameters, never inline. A channel's
-  `bot_token`/`access_token`/`code` is write-only, so it always reads as
-  changed and every update re-sends it.
+- A `tool`'s `type` (or an inline one in `tool_bindings`) takes what `POST
+  …/tools` takes, `naturali` included; another literal is `400 bad_request`
+  (`details.allowed`, `details.field`).
+- Credentials go in `no_echo` parameters, never inline. Where a property takes
+  a `{{secret:…}}` reference (tool headers, a trigger's `tool_context`, an
+  `oauth_client`'s `client_secret`), declare a `secret` from the parameter and
+  write `{ sub: '{{secret:${Token}}}' }`; a resolved literal credential in a
+  tool is `400 LITERAL_CREDENTIAL`.
+- Write-only properties (a channel's `bot_token`/`access_token`/`code`, a
+  `webhook`'s `secret`) are never stored, so they always read as changed and
+  every update re-sends them.
+- Declared as on a direct create: a `trigger` without `policy_ids` acts under
+  the deploying credential's policy; an `oauth_client` without `redirect_uri`
+  (or `null`) gets `https://api.naturali.ai/v1/oauth/callback`.
+- A `ref_attr` to a naturali type resolves any of its string properties as
+  last read, never a credential or write-only one.
 - A per-resource `metadata` bag is free-form. A top-level template `metadata`
   block takes `ref`/`param`/`sub` and is resolved into `resolved_metadata`.
 - Plan limits apply to declarations, on validate too: `403
   plan_feature_not_included`, or `403 plan_limit_reached` (channels, triggers,
-  trigger interval) with the declaration in `details.field`.
+  trigger interval) with the declaration in `details.field`. A deploy also
+  counts the account's triggers outside this formation.
 
 ## 2. Validate
 
@@ -151,6 +167,9 @@ export AGENT=agent_EmeXFnXV6RRtFHvp     # read each id you need from outputs
   its own module.
 - The formation's own `metadata` field (on create/update) is static: an
   expression there is `400 FORMATION_INVALID_METADATA`.
+- The formation naturali deploys for managed conversion is read-only: a
+  write setting `naturali_managed` in `metadata` is `403
+  managed_resource_read_only`.
 
 ## 4. Change it: plan, then update
 
@@ -233,12 +252,13 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/formations/$FORMATION/eve
 ```json
 { "data": [{ "operation_type": "update", "status": "failed",
     "error": { "code": "VALIDATION_FAILED", "meta": { "logical_id": "Agent", "resource_type": "agent" } },
-    "events": [{ "logical_id": "Provider", "action": "rollback", "status": "succeeded" }] }],
-  "total": 3, "limit": 10, "offset": 0 }
+    "events": [{ "logical_id": "Provider", "action": "rollback", "status": "completed" }] }],
+  "next_cursor": null }
 ```
 
 Event `action` is `create`, `update`, `delete`, `no-op`, `rollback` or
-`rollback-skipped` (a `retain` resource left standing). List the project's
+`rollback-skipped` (a `retain` resource left standing). Page with `limit` and
+`cursor` (the previous `next_cursor`). List the project's
 formations: CLI `naturali list-formations` · `GET …/formations`.
 
 ## 6. Tear down

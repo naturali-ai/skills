@@ -49,7 +49,7 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/approvals?status=pending"
       "expires_at": "2026-10-04T01:34:56.916Z"
     }
   ],
-  "total": 1
+  "next_cursor": null
 }
 ```
 
@@ -57,9 +57,11 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/approvals?status=pending"
 export APPROVAL=apr_diGdFF6EmxwsBlJ8
 ```
 
-- Filters: `status` (`pending`, `approved`, `rejected`, `expired`), `origin`
-  (`tool_call`, `node`, `task_transition`), `expires_before`, `limit`,
-  `offset`.
+- Filters: `status` (`pending`, `approved`, `rejected`, `expired`; repeat to
+  OR), `origin` (`tool_call`, `node`, `task_transition`), `expires_from`,
+  `expires_to`, `limit`; page with `cursor` set to the last `next_cursor`.
+- A webhook subscribed to `approval.*` hears each item as it is raised and
+  settled.
 - A paused orchestration run names its item directly in
   `required_action.approval_id`.
 
@@ -85,7 +87,8 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/approvals/$APPROVAL" \
   "agent_id": "agent_8xS50HUYsaFDGH11",
   "policy_version": "guard_WwusNpQOzrgblxuA@1",
   "expires_at": "2026-10-04T01:34:56.916Z",
-  "resolved_by": null
+  "resolved_by_principal_type": null,
+  "resolved_by_principal_id": null
 }
 ```
 
@@ -96,7 +99,8 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/approvals/$APPROVAL" \
   `generation_id`, `session_id`, `agent_id`; `node` →
   `orchestration_run_id`, `node_id`; `task_transition` → `task_id`,
   `task_transition` and no `proposed_action`.
-- `policy_version` names the guardrail version that held the call.
+- `policy_version` names the guardrail version that held the call;
+  `dedup_key` groups recurrences.
 
 ## 3. Approve — or reject
 
@@ -112,7 +116,8 @@ curl -sS -X POST \
 
 ```json
 { "id": "apr_diGdFF6EmxwsBlJ8", "status": "approved",
-  "resolved_by": "user_7x9yZtYrtTbPXbx0", "edited_arguments": null }
+  "resolved_by_principal_type": "user", "resolved_by_principal_id": "user_7x9yZtYrtTbPXbx0",
+  "edited_arguments": null }
 ```
 
 - Approving runs the tool with the frozen arguments; the guardrail is not
@@ -155,7 +160,7 @@ curl -sS \
 
 ```json
 { "data": [{ "id": "gen_5EHZBqKyhI6h6O23", "initiator_generation_id": "gen_TBcvldVPdTcjWclu",
-             "status": "completed", "stop_reason": "stop" }], "total": 1 }
+             "status": "completed", "stop_reason": "stop" }], "next_cursor": null }
 ```
 
 - Its transcript (`naturali-read-a-run`) opens with "Approval
@@ -165,7 +170,7 @@ curl -sS \
 - A `node` item: the run leaves `awaiting_input` and follows the edge whose
   `condition` matches (`approved`, `rejected`, `expired`); read it back with
   `naturali-pause-a-run-for-a-human-decision`. On a rejection with no
-  `rejected` edge the run ends `succeeded`, the tool step `skipped`, and the
+  `rejected` edge the run ends `completed`, the tool step `skipped`, and the
   approval step's output carries `"decision": "rejected"` and the reason.
 - An item nobody settles expires and can never be approved. The agent's
   `on_approval_expiry` decides what follows: `terminate` (default) ends the
@@ -175,7 +180,7 @@ curl -sS \
   `naturali list-approval-recurrences`, Pro) groups proposals you keep
   deciding, with the reasons given — a candidate for a guardrail rule.
 
-Done when the item is `approved` or `rejected` with `resolved_by` set, and the
+Done when the item is `approved` or `rejected` with `resolved_by_principal_id` set, and the
 continuation (or the resumed run) has completed.
 
 ## Related skills

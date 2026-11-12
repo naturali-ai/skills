@@ -1,6 +1,6 @@
 ---
 name: naturali-connect-a-discord-channel
-description: Connect a Discord bot to a naturali.ai agent through a discord channel and prove the round trip on a real direct message. Use when asked to connect Discord, put an agent behind a Discord bot, answer Discord DMs with an agent, or find why a naturali Discord bot does not reply, and on 400 invalid_bot_token, 400 application_mismatch, 409 application_in_use or a channel gateway_error.
+description: Connect a Discord bot to a naturali.ai agent through a discord channel and prove the round trip on a real direct message. Use when asked to connect Discord, put an agent behind a Discord bot, answer Discord DMs with an agent, or find why a naturali Discord bot does not reply, and on 400 invalid_bot_token, 400 application_mismatch, 409 application_in_use, 502 discord_unavailable or a channel gateway_error.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -89,8 +89,9 @@ export CHANNEL=chan_v3Gm200xIYC0HkbB   # outputs.channel_id
   (`has_credential: true` on the channel is all you see). It always reads as
   changed, so pass the parameter again on every update.
 - The token is checked with Discord first: `400 invalid_bot_token` when Discord
-  rejects it, `400 application_mismatch` when it belongs to another app. One
-  channel per application: `409 application_in_use`.
+  rejects it, `400 application_mismatch` when it belongs to another app,
+  `502 discord_unavailable` when Discord cannot be read (retry). One channel per
+  application: `409 application_in_use`.
 - Active channels are capped across the billing owner's projects (1 Free,
   10 Pro, 100 Business): `403 plan_limit_reached`, before any credential is
   used. `disabled` channels do not count.
@@ -153,9 +154,12 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/channels/$CHANNEL/conversatio
     { "role": "user", "content": "Hello, this is a test.", "position": 0 },
     { "role": "assistant", "content": "Hi there! How can I help?", "position": 1 }
   ],
-  "total": 2
+  "next_cursor": null
 }
 ```
+
+- An inbound message also carries `provider_message_id`, the Discord message
+  id; a reply carries `null`.
 
 Done when the conversation lists both messages in order with
 `role: "assistant"` last, and the same reply arrived in your Discord DM.

@@ -56,7 +56,7 @@ export ZR_AGENT=agent_KX68YShE9FjK4yOv
 | `full` | Store, even when the project does not |
 
 - An agent can tighten a storing project to `none`, never loosen a `none`
-  project back to `full` (refused).
+  project back to `full` (`400 invalid_trace_content_mode`).
 - To make an existing agent zero-retention, add the key to its resource
   instead; it takes a new version. Tightening stops future writes only:
   content already stored stays until purged with
@@ -66,7 +66,8 @@ export ZR_AGENT=agent_KX68YShE9FjK4yOv
   marked with who erased it.
 - For the whole project, `PATCH /v1/projects/{project_id}` with
   `trace_content_mode: none`, or a `trace_content_retention_days` window
-  (ceiling set by the plan; needs `admin`).
+  (needs `admin`; longer than the plan allows is `403 plan_limit_reached`,
+  and so is `null` on a plan with a window).
 - Without a formation (only when the user asks): `POST …/agents` with the
   same properties (CLI `naturali create-agent` · SDK
   `naturali.agents.createAgent`).

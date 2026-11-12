@@ -61,6 +61,8 @@ curl -X PUT "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/release"
   request with neither (a bare agent generate) is split at random.
 - While a release runs, further edits to `Agent` (formation update or direct
   write) archive new versions as **drafts**; neither side of the split moves.
+- On a managed (`naturali`) provider both versions must use a priced model:
+  one unpriced side refuses every generation with `503 model_not_priced`.
 
 ## 2. Send traffic
 
@@ -102,7 +104,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/generations?agent_id=$AGENT" 
     { "id": "gen_8ADWHOnm2JtQC42C", "agent_version": 1, "status": "completed" },
     { "id": "gen_CbbfP9Go13L5gRpP", "agent_version": 1, "status": "completed" }
   ],
-  "total": 3
+  "next_cursor": null
 }
 ```
 

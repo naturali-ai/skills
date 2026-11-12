@@ -60,7 +60,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/conversations/$CONVERSATION/m
     { "position": 2, "role": "user", "document_id": "doc_P6hzgzI9kxCHjTbE", "content": "So what do I do now? Do I get a refund or not?" },
     { "position": 3, "role": "assistant", "document_id": "doc_4scGDjrKPeiqnJup", "content": "I can process a refund … verify the damage first?" }
   ],
-  "total": 4
+  "next_cursor": null
 }
 ```
 
@@ -107,8 +107,8 @@ export FORK=sess_ME7EHfzUrcgW74HT
 - Omit `fork_at_position` to branch at the tip; omit `agent_id` to keep the
   parent's agent. A position that names no message, or an agent from another
   project, is `400 VALIDATION_FAILED`.
-- The fork has no actor. Attach one only if the same end user will drive the
-  branch — a `single_session_per_actor` agent allows one open session per actor.
+- The fork carries over neither `actor_id` nor `tags`. Attach an actor only if
+  the same end user will drive the branch — a `single_session_per_actor` agent allows one open session per actor.
 - `tool_context` is inherited from the parent unless the fork body overrides it.
 - Recorded tool results are **replayed** as model input, never re-run: a "what
   if" cannot send an email or charge a card twice, and it sees the tool data as
@@ -126,9 +126,13 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$FORK/genera
 ```json
 {
   "status": "completed",
+  "content": "No, we don't require the item to be returned for a refund or replacement. Please attach a photo of the damage to your original email so we can take care of it right away.",
   "message": {
     "role": "assistant",
-    "content": "No, we don't require the item to be returned for a refund or replacement. Please attach a photo of the damage to your original email so we can take care of it right away."
+    "document_id": "doc_Hq3TzW8bLm0RxVcE",
+    "agent_id": "agent_ixltZtxnUCYlkZBV",
+    "position": 3,
+    "content": "No, we don't require the item to be returned …"
   },
   "generation_id": "gen_HJEoOLi1M5JkMPis",
   "trace_id": "trace_sOA19UFrqWc2I0Tv"
@@ -164,7 +168,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$SESSION/forks" \
       "name": "ticket-4471-retry"
     }
   ],
-  "total": 1
+  "next_cursor": null
 }
 ```
 

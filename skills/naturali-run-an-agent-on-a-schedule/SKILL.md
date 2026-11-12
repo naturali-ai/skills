@@ -58,8 +58,9 @@ export TRIGGER=trg_KipkvLcSYfHYNBmA
 - The schedule is live from here; the trigger's `next_fire_at` (read with CLI
   `naturali get-trigger` · SDK `naturali.triggers.getTrigger`) is computed for
   you, and nothing else runs on your side.
-- Firings run as the caller who deployed the formation, confined so a firing
-  never exceeds what that caller could do directly.
+- A firing has no caller, so it acts under the trigger's `policy_ids`. Left
+  out, they are the policy of the credential that deployed it, so a firing can
+  do no more than its creator; read them back in `policy_ids`.
 - `type` is immutable after creation.
 - A `cron` tighter than the plan allows (`*/15 * * * *` on Free) is refused
   before anything is created — at validate, plan and deploy alike, with the
@@ -95,7 +96,7 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/triggers/$TRIGGER/fir
   "id": "trg_fire_WCXDKoYaTTSPY2vm",
   "trigger_id": "trg_KipkvLcSYfHYNBmA",
   "source": "manual",
-  "status": "succeeded",
+  "status": "completed",
   "input": { "message": "Write today's one-line reminder of our refund window." },
   "result": { "target_type": "agent", "result_id": "gen_TcQ6rGwVeOXdXfqf", "status": "completed",
               "output": "Don't forget: You have 30 days from delivery to request a refund." },
@@ -150,13 +151,13 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/trigger-firings?trigger_id=$T
 
 ```json
 {
-  "data": [{ "id": "trg_fire_WCXDKoYaTTSPY2vm", "source": "manual", "status": "succeeded",
+  "data": [{ "id": "trg_fire_WCXDKoYaTTSPY2vm", "source": "manual", "status": "completed",
              "result": { "target_type": "agent", "result_id": "gen_TcQ6rGwVeOXdXfqf", "status": "completed" } }],
-  "total": 1, "limit": 50, "offset": 0
+  "next_cursor": null
 }
 ```
 
-Done when the manual firing is `succeeded`, its generation carries
+Done when the manual firing is `completed`, its generation carries
 `trigger_id`, and after 09:00 UTC the log holds an entry with
 `"source": "schedule"` — the schedule running without you.
 

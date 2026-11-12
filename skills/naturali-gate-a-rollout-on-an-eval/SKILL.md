@@ -202,7 +202,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/versions" \
     { "id": "agver_m7PsncJPs9ePvgbu", "version": 2, "label": null, "eval_run_id": "evrun_T8ZROCSa4dTvZ7H4" },
     { "id": "agver_ldzzwXGEy09kNAvK", "version": 1, "label": null, "eval_run_id": null }
   ],
-  "total": 2
+  "next_cursor": null
 }
 ```
 

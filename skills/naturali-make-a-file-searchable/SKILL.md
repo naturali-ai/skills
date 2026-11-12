@@ -52,8 +52,11 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/ingestion-rules" \
 ```
 
 - `application/pdf` converts only a PDF with no text layer (a scan).
-- The `naturali_managed` rules are read-only (`403 managed_resource_read_only`).
-  A rule of your own on a narrower type (`image/png`) wins over them.
+- The managed rules are deployed as a formation naturali owns (named
+  naturali-conversion); changing or deleting them or that formation is
+  `403 managed_resource_read_only`.
+  A rule of your own on a narrower type (`image/png`) wins over them, and a type
+  you already had a rule for keeps yours.
 - No `naturali_managed` rules means conversion is off: `managed_conversion: true`
   on `PATCH /v1/projects/{project_id}` (needs `admin`) turns it back on.
 - Text, Markdown and PDFs with text need no rule. Any other type needs an
@@ -97,6 +100,11 @@ export FILE=file_FHQCMvpqtwyOhM4J
   `naturali.files.uploadFile` · `POST …/files/upload` with
   `-F "file=@handbook.pdf;type=application/pdf" -F prefix=/handbook`. Past the
   upload ceiling (25 MB by default) it is `413 UPLOAD_TOO_LARGE`.
+- `metadata` is a JSON object; only the multipart upload sends it as a
+  serialized string (`'{"author":"Ada"}'`), and text that is not an object is
+  `400`.
+- Past the project's `storage_bytes` quota an upload or ingest is `409
+  QUOTA_STORAGE_EXCEEDED`.
 
 ## 3. Ingest it
 
@@ -132,7 +140,10 @@ export DOCUMENT=doc_U92YTco33ny3EIi2
   `size` with `chunk_size` (1000) and `chunk_overlap` (200). An image or a
   recording becomes a single chunk.
 - A file backs one document: a second ingest is `409 FILE_ALREADY_INGESTED`.
-  Upload a copy to index it under another path.
+  Upload a copy to index it under another path; a path another file already
+  holds is `409 NAME_CONFLICT`.
+- `tags` on the ingest are returned with every search hit and filter search
+  and agents (`knowledge_config.tags`).
 
 ## 4. Wait until it is ready
 
@@ -156,8 +167,8 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/documents/$DOCUMENT/status" \
 
 - Only `ready` documents are searched. Poll until `ready` or `failed`; short
   files take seconds.
-- `failed` carries the reason in `error` (`FILE_PARSE_FAILED`,
-  `INGESTION_TIMEOUT`). Re-run against the same file, optionally with another
+- `failed` carries `error` with a `code` (`FILE_PARSE_FAILED`,
+  `INGESTION_TIMEOUT`) and a `message`. Re-run against the same file, optionally with another
   `chunk_strategy`: CLI `naturali reingest-document` · SDK
   `naturali.documents.reingestDocument` · `POST …/documents/$DOCUMENT/ingest`.
 
@@ -185,6 +196,8 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/documents/$DOCUMENT" \
 - `content` is exactly what retrieval hands an agent. A recording reads as its
   transcript (`"Launch is next Tuesday."`). If it is wrong, fix the source and
   reingest; the agent's answer can be no better.
+- Each conversion is a generation billed at the conversion rate for its whole
+  input; a negative credit balance cannot ingest.
 
 Done when the status reads `ready` (and, for media, `content` holds the text
 you expect).
@@ -193,4 +206,6 @@ you expect).
 
 - `naturali-search-knowledge` — see the passages a question retrieves from it.
 - `naturali-ground-an-agent-in-documents` — make an agent answer from it.
+- `naturali-answer-from-images-and-audio` — an agent answering from photos and
+  recordings end to end.
 - `naturali-deploy-a-formation` — declare text documents and ingestion rules.

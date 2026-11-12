@@ -1,6 +1,6 @@
 ---
 name: naturali-enable-naturali-models
-description: Give a naturali.ai project every naturali-managed model with no vendor account or credential through one naturali_ai_provider, and read the catalog and its prices. Use when asked to use naturali, managed or catalog models, set up a provider with no API key, list available models or their prices, or when a deploy fails with catalog_not_ready, managed_source_unavailable or 400 bad_request on a model from another source.
+description: Give a naturali.ai project every naturali-managed model with no vendor account or credential through one naturali_ai_provider, and read the catalog and its prices. Use when asked to use naturali, managed or catalog models, set up a provider with no API key, list available models or their prices, or on catalog_not_ready, managed_source_unavailable, managed_provider_read_only, managed_model_listing or 400 bad_request on a model from another source.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -44,7 +44,7 @@ curl -sS -G https://api.naturali.ai/v1/models \
       "input_modalities": ["text", "image", "video"],
       "output_modalities": ["text"],
       "status": "available",
-      "pricing": { "currency": "usd", "input_per_1k_tokens": 0.00006, "output_per_1k_tokens": 0.00024 }
+      "pricing": { "input_usd_per_token": 0.000000075, "output_usd_per_token": 0.0000003, "cached_input_usd_per_token": 0.00000001875 }
     }
   ],
   "next_cursor": "Z3B0LW9zcy1zYWZlZ3VhcmQtMjBi"
@@ -54,7 +54,8 @@ curl -sS -G https://api.naturali.ai/v1/models \
 - Paginated: pass `next_cursor` back as `cursor` until it is `null`. Other
   filters: `vendor`, `modality`.
 - `model` is the one name used everywhere a model is named — a provider's
-  `default_model`, an agent's `model`. `pricing` is per 1K tokens.
+  `default_model`, an agent's `model`. `pricing` is what it costs in credit, in
+  USD per token.
 - A model naturali cannot price, or one that does not output text, is not
   listed; reach it with `naturali-bring-your-own-model-key`.
 
@@ -95,9 +96,14 @@ export PROVIDER=aip_NzjzJDzoId8cm1Hu   # outputs.ai_provider_id
   `ref` re-pointed); a rename or a same-source model is an in-place update.
 - One-time per project: models that join the catalog later are priced onto the
   same provider automatically.
-- `catalog_not_ready` (catalog not synced yet) and `managed_source_unavailable`
-  (that model's source is not configured here) are not a wrong value: retry
-  later, or pick a model from another source.
+- `503 catalog_not_ready` (catalog not synced yet) and `503
+  managed_source_unavailable` (that model's source is not configured here) are
+  not a wrong value: retry later, or pick a model from another source. A
+  pricing failure rolls the provider back (`502 upstream_unavailable`).
+- naturali owns its credential and shape: a `PATCH` naming `provider`,
+  `secret_id`, `config` or `base_url` is `403 managed_provider_read_only`;
+  renaming and changing `default_model` work. `GET …/models` on it is `400
+  managed_model_listing` — its models are `GET /v1/models`.
 - Without a formation (only when the user asks): `POST …/ai-providers` with
   `"provider": "naturali"`, `name` and `default_model` (CLI
   `naturali create-ai-provider` · SDK `naturali.aiProviders.createAiProvider`).
@@ -121,15 +127,16 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/ai-providers/$PROVIDER/pr
       "model": "nova-lite-v1",
       "component": "input_tokens",
       "unit": "token",
-      "unit_price": 6.000000000000001e-8
+      "unit_price": 7.5e-8
     }
   ]
 }
 ```
 
 - One row per model per priced component (`input_tokens`, `output_tokens`,
-  `cached_tokens` where priced), all the same `provider`. `unit_price` is per
-  token; the catalog quotes per 1K.
+  and `cached_tokens` / `cache_write_tokens` where the model prices caching),
+  all the same `provider`. `unit_price` is the catalog's `pricing` figure for
+  the same component.
 - Only models of the same source as `default_model` are priced here (Gemini,
   for example, needs a second provider).
 - An empty list means the provider exists but was never priced: remove

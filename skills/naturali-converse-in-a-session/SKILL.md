@@ -1,6 +1,6 @@
 ---
 name: naturali-converse-in-a-session
-description: Hold a multi-turn conversation with a naturali.ai agent in a session, answered automatically or on demand, and read its transcript, cost and the model input of any turn. Use when asked to chat with an agent over several turns, open or resume a session, keep context between messages, attribute turns to a customer, read what the agent saw on a turn, or when a session call answers 409 (generation in progress), 410 (expired) or 429 QUOTA_EXCEEDED.
+description: Hold a multi-turn conversation with a naturali.ai agent in a session, answered automatically or on demand, and read its transcript, cost and the model input of any turn. Use when asked to chat with an agent over several turns, open or resume a session, keep context between messages, attribute turns to a customer, read what the agent saw on a turn, or when a session call answers 409 (generation in progress), 409 IDEMPOTENCY_KEY_REUSED, 410 (expired) or 429 QUOTA_EXCEEDED.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -38,6 +38,7 @@ resources:
       auto_generate: true
       # actor_id: { ref: Ada }   # bill every turn to this end user
       # inactivity_ttl_seconds: 86400   # 0 = never expires
+      # max_context_messages: 20   # recent messages sent to the model; overrides the agent's
 outputs:
   session_id: { ref: Session }
 ```
@@ -79,6 +80,8 @@ export CONVERSATION=conv_sBuVIHG9g1WSQF3s
   for the same actor.
 - `usage` (tokens and `cost_usd` over the session's generations) is on this
   single read only; listings omit it.
+- `tool_context` (headers for the agent's `http`/`mcp` tools) is write-only: no
+  read returns it, and closing or expiring the session clears it.
 
 ## 2. Send a message
 
@@ -96,12 +99,18 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$SESSION/mes
 ```json
 {
   "status": "completed",
+  "content": "Sorry to hear that, since the package arrived damaged, we can definitely process a refund or credit for that order.",
   "message": {
     "role": "assistant",
-    "content": "Sorry to hear that, since the package arrived damaged, we can definitely process a refund or credit for that order."
+    "document_id": "doc_ddGeJI4bF68l70tt",
+    "agent_id": "agent_wqZgqIhg278sf9eR",
+    "position": 1,
+    "content": "Sorry to hear that, since the package arrived damaged, …",
+    "idempotency_key": null
   },
   "generation_id": "gen_GcJ9Uzq1K9lF7r1P",
-  "trace_id": "trace_XDhQmTFjq9dxjoLy"
+  "trace_id": "trace_XDhQmTFjq9dxjoLy",
+  "model": "glm-4.7-flash"
 }
 ```
 
@@ -118,8 +127,10 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$SESSION/mes
 ```json
 {
   "status": "completed",
-  "message": { "role": "assistant", "content": "I can process a refund for a cracked screen issue, but have you tried shipping the device back so the warehouse can verify the damage first?" },
-  "generation_id": "gen_WnItK9ZWP1zvPcko"
+  "content": "I can process a refund for a cracked screen issue, but have you tried shipping the device back so the warehouse can verify the damage first?",
+  "message": { "role": "assistant", "document_id": "doc_4scGDjrKPeiqnJup", "position": 3, "content": "I can process a refund …" },
+  "generation_id": "gen_WnItK9ZWP1zvPcko",
+  "model": "glm-4.7-flash"
 }
 ```
 
@@ -127,9 +138,11 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$SESSION/mes
 export GENERATION=gen_WnItK9ZWP1zvPcko
 ```
 
-- `idempotency_key` in the body deduplicates within the session: the same key
-  returns the original message with `200` and starts no second generation —
-  what makes a retrying webhook safe.
+- `idempotency_key` in the body (or the `Idempotency-Key` header) deduplicates
+  within the session: the same key returns the original message with `200` and
+  starts no second generation — what makes a retrying webhook safe. The same key
+  with a different `message`, `document_id` or `tool_context` is
+  `409 IDEMPOTENCY_KEY_REUSED`.
 - If a generation is already running, or `auto_generate` is off, the call
   returns only the saved message (`role: user`).
 - `429 QUOTA_EXCEEDED` (with `Retry-After`, `error.meta.quota_id`) means an
@@ -156,7 +169,8 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$SESSION/gen
 ```json
 {
   "status": "completed",
-  "message": { "role": "assistant", "content": "It can hold papers together to keep them organized." },
+  "content": "It can hold papers together to keep them organized.",
+  "message": { "role": "assistant", "position": 3, "content": "It can hold papers together to keep them organized." },
   "generation_id": "gen_75KEqGukuWyk0qQp",
   "trace_id": "trace_dSRX56VdezF4qGEE"
 }

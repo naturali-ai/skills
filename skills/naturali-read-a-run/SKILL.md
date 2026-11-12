@@ -35,7 +35,7 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/generations?agent_id=$AGE
 ```json
 { "data": [{ "id": "gen_jOlNFyP9nMfqhPBq", "trace_id": "trace_yDTzcHKEA1G3pxp5", "status": "failed",
     "agent_version": 3, "error": { "code": "AI_PROVIDER_ERROR", "message": "Provider returned 404: …" } }],
-  "total": 1, "limit": 20, "offset": 0 }
+  "next_cursor": null }
 ```
 
 ```bash
@@ -47,7 +47,8 @@ export TRACE=trace_yDTzcHKEA1G3pxp5
   failed ends `completed`; only its transcript shows it.
 - Other filters: `trace_id`, `session_id`, `actor_id`, `chain_id`,
   `initiator_generation_id`, `orchestration_run_id`, `node_id`, `status`
-  (`in_progress`, `requires_action`, `completed`, `failed`); `limit`/`offset`.
+  (`running`, `requires_action`, `completed`, `failed`); `limit`, and `cursor`
+  set to the last `next_cursor` for the next page.
 - A failed agent run files no exception, so an empty exceptions list proves
   nothing.
 
@@ -78,7 +79,9 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/generations/$GENERATION" 
 ```
 
 - `error` is set only when the run itself stopped on a failure (e.g. `code:
-  AI_PROVIDER_ERROR`), never for a failed tool inside it.
+  AI_PROVIDER_ERROR`), never for a failed tool inside it. On your own provider
+  key, `error.meta` adds `provider_status_code` and `provider_response_body`;
+  on a naturali-managed provider they are removed and the message is generic.
 - `agent_version` pins a failure to the config change that introduced it.
 - `stop_reason`: the vendor's (`stop`, `tool-calls`, `length`) or the
   platform's (`max_steps`, `depth_guard`, `chain_limit`, `error`).
@@ -114,8 +117,9 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/generations/$GENERATION/t
       "tool_call_id": "tooluse_7KnRKOeqjEVM4dBnASMvBm",
       "tool_name": "service-health",
       "result": null,
-      "error": { "name": "HttpToolError", "status": 404, "method": "GET",
-                 "url": "https://api.naturali.ai/v1/health", "body": "{\"error\":{\"code\":\"not_found\"}}" }
+      "error": { "code": "TOOL_CALL_FAILED", "message": "HTTP 404 GET https://api.naturali.ai/v1/health: …",
+                 "meta": { "name": "HttpToolError", "status": 404, "method": "GET",
+                           "url": "https://api.naturali.ai/v1/health", "body": "{\"error\":{\"code\":\"not_found\"}}" } }
     }]
   }],
   "output": { "content": null, "finish_reason": "tool-calls" },
@@ -124,8 +128,9 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/generations/$GENERATION/t
 ```
 
 - `tool_calls` is what the model asked for; the matching `tool_results` entry
-  carries either `result` or an `error` with the target's `status`, exact
-  `url` and `method`, and the `body` it answered. One step with no tool calls
+  carries either `result` or an `error` whose `meta` holds the target's
+  `status`, exact `url` and `method`, and the `body` it answered. A tool that
+  raised its own code keeps it; any other failure is `TOOL_CALL_FAILED`. One step with no tool calls
   is a plain answer.
 - `input: null`, `steps: []`, `output: null` with `content_redacted_at` set is a
   `200`, not an error: `content_redacted_by_principal_id: "zero_retention"`
@@ -135,24 +140,25 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/generations/$GENERATION/t
 
 ## 4. Read a multi-agent run
 
-Any trace id in the tree returns the whole tree; `include=generations` embeds
-each node's generations.
+Any trace id in the tree returns the whole tree.
 
 CLI `naturali get-trace-tree` · SDK `naturali.traces.getTraceTree`
 
 ```bash
-curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/traces/$TRACE/tree?include=generations" \
+curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/traces/$TRACE/tree" \
   -H "Authorization: Bearer $NATURALI_TOKEN"
 ```
 
 ```json
-{ "id": "trace_yDTzcHKEA1G3pxp5", "agent_id": "agent_6aMJbsbQ6Y2jdl20", "step_count": 1, "error": null,
-  "generations": [{ "id": "gen_jOlNFyP9nMfqhPBq", "status": "completed" }],
-  "children": [] }
+{ "id": "trace_yDTzcHKEA1G3pxp5", "agent_id": "agent_6aMJbsbQ6Y2jdl20", "step_count": 1,
+  "parent_trace_id": null, "error": null, "children": [] }
 ```
 
-The node carrying an `error` is the sub-agent that failed; `children` are the
-traces its tool calls started.
+- The node carrying an `error` is the sub-agent that failed; `children` are
+  the traces its tool calls started.
+- A node's generations: `GET …/generations?trace_id=<node id>` (step 1's
+  listing). Its direct children, paged: `GET …/traces?parent_trace_id=<node id>`
+  (CLI `naturali list-traces` · SDK `naturali.traces.listTraces`).
 
 ## 5. Find the runs that continued it
 

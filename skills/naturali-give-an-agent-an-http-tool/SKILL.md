@@ -1,6 +1,6 @@
 ---
 name: naturali-give-an-agent-an-http-tool
-description: Declare an http tool (URL placeholders, method, headers, argument JSON Schema) and bind it to a naturali.ai agent, optionally forcing the call with tool_choice. Use when an agent must call an API, webhook or HTTP endpoint, when asked to create, add or bind a tool, put a token in a tool header, force a tool call, or on 422 FORCED_TOOL_CHOICE_CANNOT_STOP or TOOL_EGRESS_BLOCKED.
+description: Declare an http tool (URL placeholders, method, headers, argument JSON Schema) and bind it to a naturali.ai agent, optionally forcing the call with tool_choice. Use when an agent must call an API, webhook or HTTP endpoint, when asked to create, add or bind a tool, put a token in a tool header, force a tool call, or on 400 LITERAL_CREDENTIAL, 422 FORCED_TOOL_CHOICE_CANNOT_STOP or TOOL_EGRESS_BLOCKED.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -65,24 +65,39 @@ export TOOL=tool_8Vfntfb4p4z2goON
 - `name` is what the model calls and what `tool_choice` and
   `stop_conditions` name; `description` and `parameters` are all the model
   sees, so write them the way you want it to call the endpoint.
-- `execute.url` takes `{param}` placeholders filled from the arguments;
-  `method` defaults to `POST`.
-- The resolved arguments are always sent as the request body, even on `GET`.
-  Most servers ignore it; a target that rejects a `GET` with a body fails
-  every call — use its `POST` route if it has one.
-- A credential goes in a `no_echo` parameter, never inline:
+- `execute.url` takes `{param}` placeholders filled (URL-encoded) from the
+  arguments; those arguments leave the query and body. `method` defaults to
+  `POST`.
+- The other arguments are sent as the request body, even on `GET`. Most
+  servers ignore it; a target that rejects a `GET` with a body fails every
+  call — use its `POST` route if it has one.
+- Every call's input must satisfy `parameters`, else `400 VALIDATION_FAILED`
+  before dispatch.
+- A credential lives in a `secret`, referenced as `{{secret:<id>}}` in a
+  header; a literal one (`Authorization`, `Cookie`, a name containing
+  `api-key`/`token`/`secret`/`password`, or one in the URL) is `400
+  LITERAL_CREDENTIAL` (`meta.paths`):
 
   ```yaml
   parameters:
     ApiToken: { type: string, no_echo: true }
   resources:
+    Token:
+      type: secret
+      properties:
+        name: orders-api-token
+        value: { param: ApiToken }
     Lookup:
       properties:
         execute:
           # …url and method as above, plus:
           headers:
-            Authorization: { sub: 'Bearer ${ApiToken}' }
+            Authorization: { sub: 'Bearer {{secret:${Token}}}' }
   ```
+
+- A per-user credential comes from the call's `tool_context` instead:
+  `Authorization: 'Bearer {{context:userToken}}'`; a missing key fails the
+  call with `MISSING_TOOL_CONTEXT_KEY`.
 
 - `tool_bindings` is replaced wholesale: list every tool the agent keeps.
 - A tool reaches the public internet only; a private or internal address is

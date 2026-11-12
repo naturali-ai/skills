@@ -121,7 +121,6 @@ curl -X POST \
   "dataset_id": "dset_270ATibup5AdwKwQ",
   "input": [{ "role": "user", "content": "What is our refund window?" }],
   "expected_output": "Refunds are accepted within 30 days of purchase.",
-  "metadata": null,
   "source_generation_id": "gen_7EZdyuFLY96IOQAN"
 }
 ```

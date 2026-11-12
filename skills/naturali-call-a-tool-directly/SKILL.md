@@ -20,7 +20,7 @@ failed.
   `naturali-give-an-agent-an-http-tool`. The example is a health check whose
   URL is one segment off (`/v1/health`; the endpoint is `/health`).
 - To debug a failed run, its failing call named first with
-  `naturali-read-a-run` (the transcript's `tool_results[].error`).
+  `naturali-read-a-run` (the transcript's `tool_results[].error.meta`).
 
 Ids below are examples; use the ones your own calls return.
 
@@ -74,7 +74,11 @@ badly.
 - `preset_parameters` on the tool win over the same keys in `input`.
 - `tool_context` (string map) is forwarded as context headers, narrowed by the
   tool's `context_keys`; `session_id`, `actor_id` and `actor_external_id` are
-  dropped — this call has no session.
+  dropped — this call has no session. A key starting `naturali_` is
+  `400 bad_request`.
+- `actor_id` in the body runs the call for that actor, as its session would
+  (an `oauth_connection` credential is the actor's); an actor outside the
+  project is `400 ACTOR_NOT_FOUND`.
 
 ## 2. Fix the tool
 

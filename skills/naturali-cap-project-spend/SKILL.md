@@ -50,15 +50,15 @@ curl -G "https://api.naturali.ai/v1/projects/$PROJECT/usage" \
       { "key": "2026-10-02", "total_tokens": 3108, "event_count": 9 },
       { "key": "2026-10-01", "total_tokens": 12050, "event_count": 58 }
     ],
-    "total": 5, "limit": 50, "offset": 0
+    "next_cursor": null
   }
 }
 ```
 
 - Size against the **busiest** day, not the average: a mean-sized cap fires on
   every ordinary peak. Days are not in date order; compare them all.
-- `groups` is paged: `total` counts every bucket, so page with `offset` when it
-  exceeds `limit`.
+- `groups` is paged: a non-null `next_cursor` means more buckets; pass it back
+  as `cursor` to read them.
 - About 3× the busiest day leaves room to grow and still catches a runaway
   within hours: 12,050 → 40,000.
 - `cost_usd` is `null` on a project that only uses your own provider — a

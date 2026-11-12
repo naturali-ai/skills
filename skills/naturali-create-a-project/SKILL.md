@@ -64,7 +64,9 @@ export PROJECT=proj_V1StGXR8Z5jdHi6B
 ```
 
 - You are its `owner` (may do anything, including delete it) and its billing
-  owner: every member's usage is paid from your account.
+  owner: every member's usage is paid from your account. Ownership moves only
+  by a transfer the new owner accepts (`PUT …/transfer`, CLI
+  `naturali propose-project-transfer`).
 - One project per client or per environment. Providers, secrets, agents and
   everything else belong to exactly one, and your credential is authorized
   against it on every request.
@@ -72,7 +74,9 @@ export PROJECT=proj_V1StGXR8Z5jdHi6B
   project cap. An archived project still counts; deleting one frees a slot.
 - `idempotency_key` in the body makes a retry safe: the same key answers `200`
   with the original project; reused with a different body it is `409
-  idempotency_key_reused`.
+  idempotency_key_reused`, and while the original is still running `409
+  idempotency_request_in_progress`. Derive the key from the project, not the
+  attempt.
 - A new project starts at your plan's content-retention window
   (`trace_content_retention_days`).
 

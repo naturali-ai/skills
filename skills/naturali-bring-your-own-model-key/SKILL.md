@@ -1,6 +1,6 @@
 ---
 name: naturali-bring-your-own-model-key
-description: Use your own model vendor credential (OpenAI, Anthropic, Google, Bedrock, Vertex, Azure, Groq, xAI, a gateway or a self-hosted endpoint) in a naturali.ai project as a secret and an ai_provider. Use when asked to bring your own key (BYOK), add or rotate a vendor API key, check which models a key can reach, or when a provider answers 502 MODEL_LISTING_FAILED, 400 MODEL_LISTING_UNSUPPORTED or a 400 for bedrock or vertex without a credential.
+description: Use your own model vendor credential (OpenAI, Anthropic, Google, Bedrock, Vertex, Azure, Groq, xAI, a gateway or a self-hosted endpoint) in a naturali.ai project as a secret and an ai_provider. Use when asked to bring your own key (BYOK), add or rotate a vendor API key, check which models a key can reach, or when a provider answers 502 MODEL_LISTING_FAILED, 400 MODEL_LISTING_UNSUPPORTED or a 400 for bedrock, vertex or anthropic without a credential.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -67,9 +67,12 @@ export PROVIDER=aip_JPvMSUTATh7C6Bn6   # outputs.ai_provider_id
   literal or a parameter carrying one; a `ref` or `sub` there is `400
   bad_request`.
 - `default_model` and an agent's `model` take the vendor's own model ids.
-- `bedrock` and `vertex` must carry their own credential — `secret_id` (a
-  `ref` to a `secret` counts) or an express-mode `config.apiKey` — or the
-  create is `400`.
+- `bedrock`, `vertex` and `anthropic` must carry their own credential, a
+  `secret_id` (a `ref` to a `secret` counts), or the create is `400`; an
+  `anthropic` provider with its own `base_url` is exempt. An update that
+  strips the last credential is `400` too.
+- The credential is only ever the linked secret: `config.apiKey` is `400
+  VALIDATION_FAILED`, and `config.naturali_kind` is reserved (`400`).
 - A vendor that needs no credential (a local `ollama`) takes `base_url` and no
   `secret_id`.
 - The provider is created whether or not the key works; nothing calls the
@@ -92,15 +95,19 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/ai-providers/$PROVIDER/mo
 ```
 
 ```json
-{ "provider": "openai", "models": [{ "id": "gpt-4o-mini" }, { "id": "gpt-4o" }, { "id": "o3-mini" }] }
+{ "data": [{ "id": "gpt-4o-mini" }, { "id": "gpt-4o" }, { "id": "o3-mini" }], "next_cursor": null }
 ```
 
 - Each `id` is usable as `default_model` or an agent's `model`. Pinning one not
   listed fails at generation time.
+- Paginated: first 50 by default; `q` filters on `id`/`display_name`, pass
+  `next_cursor` back as `cursor` until it is `null`.
 - A key the vendor rejects is `502`:
   `{ "error": { "code": "MODEL_LISTING_FAILED", "message": "The openai provider rejected the model listing request (HTTP 401)." } }`.
   Rotate it: apply the same template with the new `OpenAiKey` parameter; the
   provider keeps its id.
+- A `bedrock`/`vertex` record with no linked secret cannot list: `400
+  AI_PROVIDER_MISCONFIGURED`.
 - `azure` and `ollama` cannot list (`400 MODEL_LISTING_UNSUPPORTED`), nor can a
   Vertex key in express mode; prove those with one generation instead
   (`naturali-run-a-generation`).

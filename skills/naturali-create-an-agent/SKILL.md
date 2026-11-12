@@ -1,6 +1,6 @@
 ---
 name: naturali-create-an-agent
-description: Declare a naturali.ai agent (instructions, model, step and sampling limits) in naturali.yaml, change it by editing the template, and list its versions. Use when asked to create, configure, rename or change an agent or its instructions or model, see its version history, try a fix on a second agent beside the original, or on 400 bad_request for a model, 400 SYSTEM_MESSAGE_NOT_ALLOWED or 409 AGENT_HAS_DEPENDENTS.
+description: Declare a naturali.ai agent (instructions, model, step and sampling limits) in naturali.yaml, change it by editing the template, and list its versions. Use when asked to create, configure, rename or change an agent or its instructions or model, see its version history, try a fix on a second agent beside the original, or on 400 bad_request or model_not_priced for a model, 400 SYSTEM_MESSAGE_NOT_ALLOWED or 409 AGENT_HAS_DEPENDENTS.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -54,11 +54,13 @@ Reading it back (`GET …/agents/{agent_id}`, CLI `naturali get-agent`) shows
   `model_route_id`.
 - `model` unset (`null`) uses the provider's `default_model`. Set it to pick
   another: a catalog `model` on a managed provider (one of the same source,
-  else `400 bad_request`), the vendor's own id on your own key.
+  else `400 bad_request`; one with no price, or not in the catalog, `400
+  model_not_priced` with `details.model`), the vendor's own id on your own key.
 - `instructions` is the system prompt; a request carrying a `system` message is
   `400 SYSTEM_MESSAGE_NOT_ALLOWED`.
 - Other common keys: `temperature`, `max_steps` (steps per turn, default 20),
-  `max_context_messages`. Tools, knowledge, memory, output schema and
+  `max_output_tokens`, `reasoning`, `max_context_messages`, `prompt_caching`,
+  `policy_ids`. Tools, knowledge, memory, output schema and
   zero-retention each have their own skill.
 - Without a formation (only when the user asks): `POST …/agents` with the same
   properties and `ai_provider_id: $PROVIDER` (CLI `naturali create-agent` · SDK
@@ -104,12 +106,12 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/agents/$AGENT/versions" \
     { "version": 2, "config": { "instructions": "Answer in one sentence, then ask: Anything else I can help with?" } },
     { "version": 1, "config": { "instructions": "Answer in one sentence. If you are unsure, say so." } }
   ],
-  "total": 2, "limit": 50, "offset": 0
+  "next_cursor": null
 }
 ```
 
-- Newest first; each `config` holds every mutable field as it stood. One
-  version: `GET …/versions/{version}` (CLI `naturali get-agent-version`).
+- Newest first; each `config` holds every mutable field as it stood. Pass
+  `next_cursor` back as `cursor` until it is `null`. One version: `GET …/versions/{version}` (CLI `naturali get-agent-version`).
 - Every generation records the `agent_version` that served it, so a change can
   be pinned to the run it affected.
 - Deleting an agent that has run is `409 AGENT_HAS_DEPENDENTS`

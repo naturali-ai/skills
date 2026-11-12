@@ -1,6 +1,6 @@
 ---
 name: naturali-orchestrate-several-agents
-description: Chain several naturali.ai agents into one orchestration (researcher, writer, reviewer), start a run and read what each step produced. Use when asked to build a multi-agent pipeline or squad, chain agents in sequence, pass one agent's output to the next, write input_mapping, state_mapping or output_mapping, validate an orchestration, start or poll a run, or read a run's node_executions.
+description: Chain several naturali.ai agents into one orchestration (researcher, writer, reviewer), start a run and read what each step produced. Use when asked to build a multi-agent pipeline or squad, chain agents in sequence, pass one agent's output to the next, write input_mapping, state_mapping or output_mapping, validate an orchestration, start or poll a run, or list a run's node executions.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -10,7 +10,7 @@ metadata:
 # Orchestrate several agents
 
 Outcome: a `support-reply` orchestration of three agents, each doing one job in
-order, proven by a `succeeded` run whose record shows the facts, the draft and
+order, proven by a `completed` run whose record shows the facts, the draft and
 the checked reply each step produced.
 
 ## Before you start
@@ -109,7 +109,7 @@ EOF
 ```
 
 ```json
-{ "valid": true, "errors": [], "warnings": [] }
+{ "valid": true, "problems": [], "warnings": [] }
 ```
 
 ## 3. Declare the orchestration
@@ -203,7 +203,7 @@ export RUN=orch_run_6edpfLYy6vJtHfgH
 
 ## 5. Read the run back
 
-Poll until `status` is terminal: `succeeded`, `failed`, `cancelled` or
+Poll until `status` is terminal: `completed`, `failed`, `cancelled` or
 `expired` (this one took about three seconds).
 
 CLI `naturali get-orchestration-run` · SDK `naturali.orchestrations.getOrchestrationRun`
@@ -215,9 +215,27 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$RUN" \
 
 ```json
 {
-  "status": "succeeded",
+  "id": "orch_run_6edpfLYy6vJtHfgH",
+  "status": "completed",
   "output": { "reply": "Yes, a cake is eligible for a refund. It must be requested within 48 hours of pickup, and a receipt is required. …" },
-  "node_executions": [
+  "usage": { "cost_usd": 0.00007313, "input_tokens": 319, "output_tokens": 127 },
+  "trace_id": "trace_2mWssjSFsGAd5d2D"
+}
+```
+
+The run carries no steps; list them, oldest first (paginated with
+`next_cursor`).
+
+CLI `naturali list-orchestration-run-node-executions` · SDK `naturali.orchestrations.listOrchestrationRunNodeExecutions`
+
+```bash
+curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$RUN/node-executions" \
+  -H "Authorization: Bearer $NATURALI_TOKEN"
+```
+
+```json
+{
+  "data": [
     { "node_id": "research", "node_type": "agent", "status": "completed",
       "output": { "object": null, "content": "*   Cakes are eligible for refunds.\n*   Refunds must be requested within 48 hours of pickup.\n…" } },
     { "node_id": "draft", "node_type": "agent", "status": "completed",
@@ -226,13 +244,12 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$RUN" \
     { "node_id": "review", "node_type": "agent", "status": "completed",
       "output": { "object": null, "content": "Yes, a cake is eligible for a refund. …" } }
   ],
-  "usage": { "cost_usd": 0.00007313, "input_tokens": 319, "output_tokens": 127 },
-  "trace_id": "trace_2mWssjSFsGAd5d2D"
+  "next_cursor": null
 }
 ```
 
-Done when `status` is `succeeded`, `output.reply` holds the reviewed answer, and
-`node_executions` lists `research`, `draft`, `review` in order, each
+Done when `status` is `completed`, `output.reply` holds the reviewed answer, and
+the node executions list `research`, `draft`, `review` in order, each
 `completed`, the writer's `input.facts` being exactly the researcher's output.
 `usage` is the cost of all three steps; `trace_id` opens the run in traces.
 

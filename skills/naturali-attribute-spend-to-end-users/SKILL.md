@@ -103,9 +103,11 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/sessions/$SESSION/gen
 ```json
 {
   "status": "completed",
-  "message": { "role": "assistant", "content": "It can hold papers together to keep them organized." },
+  "content": "It can hold papers together to keep them organized.",
+  "message": { "role": "assistant", "content": "It can hold papers together to keep them organized.", "agent_id": "agent_re9DGUEaiCnHFSv5", "position": 1 },
   "generation_id": "gen_75KEqGukuWyk0qQp",
-  "trace_id": "trace_dSRX56VdezF4qGEE"
+  "trace_id": "trace_dSRX56VdezF4qGEE",
+  "model": "glm-4.7-flash"
 }
 ```
 
@@ -133,7 +135,7 @@ curl -G "https://api.naturali.ai/v1/projects/$PROJECT/usage" \
       { "key": null, "cost_usd": 0.00002488, "total_tokens": 115, "event_count": 2 },
       { "key": "actor_Uv6w8P36z5gwrpcO", "cost_usd": 0.00000895, "total_tokens": 76, "event_count": 1 }
     ],
-    "total": 2, "limit": 50, "offset": 0
+    "next_cursor": null
   }
 }
 ```
@@ -141,7 +143,8 @@ curl -G "https://api.naturali.ai/v1/projects/$PROJECT/usage" \
 - `key` is the actor id. `null` is every generation with no end user behind it
   (here two made without an actor); no actor quota ever counts it.
 - One user alone: pass `actor_id=$ADA` instead of `group_by`.
-- `groups` is paged (`total`, `limit`, `offset`); add `from`/`to` for a window.
+- `groups` is paged: pass a non-null `next_cursor` back as `cursor`; add
+  `from`/`to` for a window.
 
 Done when Ada's actor id appears as a `key` in `groups.data` with her turn's
 tokens.

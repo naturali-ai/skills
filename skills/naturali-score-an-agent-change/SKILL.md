@@ -71,8 +71,9 @@ export EVAL=eval_TFAwXeInG0W1rwFd
 - Other scorers: `exact_match`, `contains` (`value`), `json_logic`
   (`expression`), `output_schema` (needs an agent `output_schema`),
   `embedding_similarity` (`pass_threshold`), `tool` (your own scoring tool,
-  `http`/`mcp`/`pipeline`). Each type at most once per eval; `tool` may repeat
-  under distinct `name`s.
+  `http`/`mcp`/`pipeline`), `decider` (`name`, `decider_id`, a `score`
+  expression over the decision's `answers`, `pass_threshold`). Each type at most
+  once per eval; `tool` and `decider` may repeat under distinct `name`s.
 - Changing scorers later is an edit of `Suite` plus an update.
 - Without a formation (only when the user asks): `POST …/evals` with the same
   properties (CLI `naturali create-eval` · SDK `naturali.evaluations.createEval`).
@@ -210,7 +211,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/evals/$EVAL/runs/$RUN/results
       "error": null
     }
   ],
-  "total": 2
+  "next_cursor": null
 }
 ```
 

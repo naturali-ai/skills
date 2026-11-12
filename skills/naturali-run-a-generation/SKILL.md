@@ -42,7 +42,7 @@ export GENERATION=gen_GvfSi82dWIHZ2QuJ
 export TRACE=trace_YWhw2oowz6wCVN7N
 ```
 
-Poll until `status` leaves `in_progress`:
+Poll until `status` leaves `running`:
 
 CLI `naturali get-generation` · SDK `naturali.generations.getGeneration`
 
@@ -64,8 +64,12 @@ curl -sS "https://api.naturali.ai/v1/projects/$PROJECT/generations/$GENERATION" 
 ```
 
 - `completed`; `requires_action` (a client tool waits on your code —
-  `naturali-run-tools-in-your-own-code`); or `failed`, with `error.message`
-  (usually a credential the vendor rejected or a model it cannot reach).
+  `naturali-run-tools-in-your-own-code`); or `failed`, with `error` as
+  `{ code, message, meta? }`: `AI_PROVIDER_ERROR` (usually a credential the
+  vendor rejected or a model it cannot reach) or `GENERATION_FAILED`.
+- On your own key `error.meta` adds the vendor's `provider_status_code` and
+  `provider_response_body`; on a managed provider they are removed and the
+  message reads `The model provider could not complete this request.`
 - The answer text is in the transcript (`naturali-read-a-run`).
 
 ## 1b. Or wait for the answer inline
@@ -113,7 +117,7 @@ export TRACE=trace_GjICOF5cL7NJ7Kjj
 - `action_id` labels the run on the usage meter; `metadata` is a caller-owned
   bag echoed on the generation record.
 - `idempotency_key` makes a retry safe: a repeat runs nothing and answers `202`
-  with the original generation; the same key with a changed body is `409
+  with the original generation in whatever state it reached, in every mode; the same key with a changed body is `409
   IDEMPOTENCY_KEY_REUSED`.
 - `"stream": true` answers SSE deltas ending `data: [DONE]`; a failure arrives
   as a final `data: {"error": …}` frame with no `[DONE]`. Not combinable with
@@ -123,10 +127,11 @@ export TRACE=trace_GjICOF5cL7NJ7Kjj
   `error.meta` carries `generation_id` and `trace_id` for `naturali-read-a-run`.
 - Refused before anything runs: `503 model_not_priced` (managed model with no
   price yet; retry after the daily sync or pin another model), `402
-  insufficient_credit` (billing owner's balance is negative; managed models
-  only; zero still generates), `403 plan_limit_reached` with `resource: "runs"`
-  (Free plan's monthly runs, your own key included), `429 QUOTA_EXCEEDED`
-  (an enforced quota; `Retry-After` header).
+  insufficient_credit` (billing owner's balance is negative, or zero with no
+  saved card — `details.card_required: true`; managed models only), `403
+  plan_limit_reached` with `resource: "runs"` (Free plan's monthly runs, your
+  own key included; `details.limit`, `used`), `429 QUOTA_EXCEEDED` (an
+  enforced quota; `error.meta.resets_at`, `Retry-After` header).
 
 Done when the generation reads `status: "completed"`.
 

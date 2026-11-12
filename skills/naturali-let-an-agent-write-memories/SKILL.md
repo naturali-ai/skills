@@ -62,7 +62,7 @@ export STORE=mstore_VR4qLsqRvz2N9pBr   # outputs.memory_store_id
   every turn instead, use a memory rule (`naturali-give-an-agent-long-term-memory`).
 - Each write is consolidated against the store: a known fact is skipped, a
   changed one supersedes the old.
-- The agent's `boundary_policy` stays `null`: nothing limits it beyond the
+- The agent's `policy_ids` stays `null`: nothing limits it beyond the
   caller's own permissions.
 - Without a formation (only when the user asks): `POST …/memory-stores`
   (CLI `naturali create-memory-store` · SDK `naturali.memoryStores.createMemoryStore`),
@@ -111,22 +111,23 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/memories?memory_store_id=$STO
     { "id": "mem_fOdkVAVocTsQAsq1", "memory_store_id": "mstore_VR4qLsqRvz2N9pBr",
       "content": "Customer picks up their order on Fridays", "invalidated_at": null, "version": 1 }
   ],
-  "total": 1
+  "next_cursor": null
 }
 ```
 
 - Listing always takes `memory_store_id`; there is no cross-store listing.
 - The turn's own record shows the call: the transcript
   (`GET …/generations/$GENERATION/transcript`) has a `write_memory` tool call
-  and its result, and `GET …/generations/$GENERATION` lists the write in
-  `memory_assertions`. See `naturali-read-a-run`.
+  and its result, and `GET …/generations/$GENERATION/memory-assertions` (CLI
+  `naturali list-generation-memory-assertions`) lists the write with
+  `mechanism: tool`. See `naturali-read-a-run`.
 
 Done when the store lists the fact the agent was asked to remember.
 
 ## Related skills
 
-- `naturali-limit-what-an-agent-may-do` — take the write away with a boundary
-  policy while the agent keeps reading.
+- `naturali-limit-what-an-agent-may-do` — take the write away with a policy
+  while the agent keeps reading.
 - `naturali-give-an-agent-long-term-memory` — facts extracted after every turn,
   with no tool.
 - `naturali-run-a-generation` — the generation calls in full.

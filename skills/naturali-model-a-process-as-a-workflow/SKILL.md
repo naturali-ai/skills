@@ -24,8 +24,10 @@ forward, for as long as the work lives.
   `naturali-deploy-a-formation`.
 - Every entry into a state that dispatches an agent is one generation: this
   process counts as two runs against the plan and draws managed tokens on the
-  balance. A move into such a state is refused (`402 insufficient_credit`)
-  while the project owes for usage already served.
+  balance. While the project owes for usage already served, a move that would
+  dispatch — opening a task whose entry state has `on_enter`, or a transition
+  into such a state — is refused (`402 insufficient_credit`); a move into a
+  state that only parks goes through.
 
 Ids below are examples; use the ones your own calls return.
 
@@ -220,11 +222,11 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/tasks/$TASK/history" \
 
 ```json
 [
-  { "from_state": null, "to_state": "draft", "transition": null, "principal_kind": "api_key", "generation_id": null },
-  { "from_state": "draft", "to_state": "review", "transition": "submit", "principal_kind": "automation", "generation_id": "gen_vkrMX0GBQEP4pRJ5" },
-  { "from_state": "review", "to_state": "draft", "transition": "revise", "principal_kind": "api_key", "note": "No delivery promises" },
-  { "from_state": "draft", "to_state": "review", "transition": "submit", "principal_kind": "automation", "generation_id": "gen_OEvJjZQ1pyoEQgD0" },
-  { "from_state": "review", "to_state": "sent", "transition": "approve", "principal_kind": "api_key" }
+  { "from_state": null, "to_state": "draft", "transition": null, "principal_type": "api_key", "generation_id": null },
+  { "from_state": "draft", "to_state": "review", "transition": "submit", "principal_type": "automation", "generation_id": "gen_vkrMX0GBQEP4pRJ5" },
+  { "from_state": "review", "to_state": "draft", "transition": "revise", "principal_type": "api_key", "note": "No delivery promises" },
+  { "from_state": "draft", "to_state": "review", "transition": "submit", "principal_type": "automation", "generation_id": "gen_OEvJjZQ1pyoEQgD0" },
+  { "from_state": "review", "to_state": "sent", "transition": "approve", "principal_type": "api_key" }
 ]
 ```
 

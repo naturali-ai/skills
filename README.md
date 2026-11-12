@@ -56,12 +56,16 @@ you start** names the skills that produce what it needs.
 | [`naturali-gate-a-tool-with-guardrails`](skills/naturali-gate-a-tool-with-guardrails/SKILL.md) | Small tool calls run, large ones wait for a person. |
 | [`naturali-settle-an-approval`](skills/naturali-settle-an-approval/SKILL.md) | A held action approved, edited or rejected. |
 | [`naturali-make-a-file-searchable`](skills/naturali-make-a-file-searchable/SKILL.md) | A file turned into a searchable document. |
+| [`naturali-answer-from-images-and-audio`](skills/naturali-answer-from-images-and-audio/SKILL.md) | Answers from uploaded photos and voice recordings. |
 | [`naturali-search-knowledge`](skills/naturali-search-knowledge/SKILL.md) | The passages a question retrieves, ranked. |
 | [`naturali-ground-an-agent-in-documents`](skills/naturali-ground-an-agent-in-documents/SKILL.md) | An agent that answers from the project's documents. |
 | [`naturali-give-an-agent-long-term-memory`](skills/naturali-give-an-agent-long-term-memory/SKILL.md) | An agent that remembers facts across conversations. |
 | [`naturali-let-an-agent-write-memories`](skills/naturali-let-an-agent-write-memories/SKILL.md) | An agent that saves what it is asked to remember. |
 | [`naturali-limit-what-an-agent-may-do`](skills/naturali-limit-what-an-agent-may-do/SKILL.md) | An agent the platform refuses some actions to. |
 | [`naturali-connect-a-discord-channel`](skills/naturali-connect-a-discord-channel/SKILL.md) | An agent answering Discord direct messages. |
+| [`naturali-connect-an-x-channel`](skills/naturali-connect-an-x-channel/SKILL.md) | An agent answering X Chat direct messages. |
+| [`naturali-sign-in-with-a-provider`](skills/naturali-sign-in-with-a-provider/SKILL.md) | Sign-in with an OAuth provider, one actor per account. |
+| [`naturali-recognise-one-user-across-channels`](skills/naturali-recognise-one-user-across-channels/SKILL.md) | A channel address and your app speaking as one actor. |
 | [`naturali-converse-in-a-session`](skills/naturali-converse-in-a-session/SKILL.md) | A multi-turn conversation, read back turn by turn. |
 | [`naturali-replay-a-turn`](skills/naturali-replay-a-turn/SKILL.md) | A bad answer re-answered on its exact history. |
 | [`naturali-roll-out-an-agent-version`](skills/naturali-roll-out-an-agent-version/SKILL.md) | A new version served to a share of traffic, then promoted. |
@@ -74,6 +78,9 @@ you start** names the skills that produce what it needs.
 | [`naturali-pause-a-run-for-a-human-decision`](skills/naturali-pause-a-run-for-a-human-decision/SKILL.md) | An orchestration run that waits for a person. |
 | [`naturali-model-a-process-as-a-workflow`](skills/naturali-model-a-process-as-a-workflow/SKILL.md) | A process where an agent drafts and a person reviews. |
 | [`naturali-run-an-agent-on-a-schedule`](skills/naturali-run-an-agent-on-a-schedule/SKILL.md) | An agent that runs on a cron schedule. |
+| [`naturali-declare-a-playbook`](skills/naturali-declare-a-playbook/SKILL.md) | A playbook of steps, a case per subject, filled and read back. |
+| [`naturali-fill-a-case-per-client`](skills/naturali-fill-a-case-per-client/SKILL.md) | An agent filling each client's case in conversation. |
+| [`naturali-chain-playbooks-across-cases`](skills/naturali-chain-playbooks-across-cases/SKILL.md) | Cases that read each other, refreshed when one changes. |
 | [`naturali-cap-project-spend`](skills/naturali-cap-project-spend/SKILL.md) | A token budget on the whole project. |
 | [`naturali-attribute-spend-to-end-users`](skills/naturali-attribute-spend-to-end-users/SKILL.md) | Spend split per end user. |
 | [`naturali-cap-spend-per-end-user`](skills/naturali-cap-spend-per-end-user/SKILL.md) | A token budget for each end user. |

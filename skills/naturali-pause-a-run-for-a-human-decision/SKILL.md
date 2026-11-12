@@ -166,7 +166,7 @@ Read the proposal and approve it (optionally with edited `arguments`) or reject
 it with a reason, with `naturali-settle-an-approval`. Approving hands the run
 back and it follows the `approved` edge into `send`.
 
-- A rejection still finishes the run `succeeded` without calling the tool:
+- A rejection still finishes the run `completed` without calling the tool:
   `send` is `skipped`, the `approve` step's output carries
   `"decision": "rejected"` and the reason, and `output.reply` still holds the
   reply nobody sent. Read the decision; never assume a reply went out.
@@ -184,10 +184,25 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$RUN" \
 
 ```json
 {
-  "status": "succeeded",
+  "status": "completed",
   "required_action": null,
   "output": { "reply": "Yes, custom cakes are eligible for refunds, … if you make it now." },
-  "node_executions": [
+  "usage": { "cost_usd": 0.00006205, "input_tokens": 275, "output_tokens": 107 }
+}
+```
+
+Then its steps, oldest first:
+
+CLI `naturali list-orchestration-run-node-executions` · SDK `naturali.orchestrations.listOrchestrationRunNodeExecutions`
+
+```bash
+curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$RUN/node-executions" \
+  -H "Authorization: Bearer $NATURALI_TOKEN"
+```
+
+```json
+{
+  "data": [
     { "node_id": "approve", "node_type": "approval", "status": "completed",
       "output": { "decision": "approved", "approvalId": "apr_KJkOcEAZOXkkNmIj",
                   "resolvedBy": "user_7x9yZtYrtTbPXbx0", "editedArgs": null, "reason": null } },
@@ -195,13 +210,13 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$RUN" \
       "input": { "reply": "Yes, custom cakes are eligible for refunds, …" },
       "output": { "url": "https://httpbin.org/post", "json": { "reply": "Yes, custom cakes are eligible for refunds, …" } } }
   ],
-  "usage": { "cost_usd": 0.00006205, "input_tokens": 275, "output_tokens": 107 }
+  "next_cursor": null
 }
 ```
 
-(`node_executions` trimmed to the last two; the three agent steps come first.)
+(Trimmed to the last two; the three agent steps come first.)
 
-Done when the run went from `awaiting_input` to `succeeded` with
+Done when the run went from `awaiting_input` to `completed` with
 `required_action` cleared, the `approve` step records `"decision": "approved"`
 and who decided, and `send` ran after it with the reviewed reply as input
 (httpbin echoed it in `json`).

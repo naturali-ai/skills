@@ -1,6 +1,6 @@
 ---
 name: naturali
-description: Build, run and audit AI agents on naturali.ai over its REST API, CLI, TypeScript SDK or MCP server. Use when a task involves naturali.ai, an agent that must answer on WhatsApp or Discord, grounding an agent in uploaded documents, gating it with guardrails or human approvals, scoring a change with evals, or reading back what an agent generated and what it cost.
+description: Build, run and audit AI agents on naturali.ai over its REST API, CLI, TypeScript SDK or MCP server. Use when a task involves naturali.ai, an agent that must answer on WhatsApp, Discord or X, grounding an agent in uploaded documents, gating it with guardrails or human approvals, scoring a change with evals, or reading back what an agent generated and what it cost.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -11,7 +11,7 @@ metadata:
 # naturali.ai
 
 naturali.ai is one API for the whole lifecycle of an agent: configure and
-version it, give it knowledge and tools, put it on WhatsApp or Discord, and read
+version it, give it knowledge and tools, put it on WhatsApp, Discord or X, and read
 back every generation it ran with its cost and the decisions behind it. The
 app, the CLI and the TypeScript SDK are thin clients over the same OpenAPI
 contract, so anything a person can do an agent can do over HTTP.
@@ -102,11 +102,13 @@ from this summary. Each one that creates a resource adds it to the template that
 | Shape an agent | `naturali-create-an-agent`, `naturali-return-structured-output`, `naturali-stop-storing-conversation-content` |
 | Run and debug | `naturali-run-a-generation`, `naturali-converse-in-a-session`, `naturali-read-a-run`, `naturali-replay-a-turn` |
 | Tools | `naturali-give-an-agent-an-http-tool`, `naturali-run-tools-in-your-own-code`, `naturali-call-a-tool-directly` |
-| Knowledge and memory | `naturali-make-a-file-searchable`, `naturali-search-knowledge`, `naturali-ground-an-agent-in-documents`, `naturali-give-an-agent-long-term-memory`, `naturali-let-an-agent-write-memories` |
+| Knowledge and memory | `naturali-make-a-file-searchable`, `naturali-answer-from-images-and-audio`, `naturali-search-knowledge`, `naturali-ground-an-agent-in-documents`, `naturali-give-an-agent-long-term-memory`, `naturali-let-an-agent-write-memories` |
 | Control | `naturali-gate-a-tool-with-guardrails`, `naturali-settle-an-approval`, `naturali-limit-what-an-agent-may-do` |
-| Channels | `naturali-connect-a-discord-channel` |
+| Channels | `naturali-connect-a-discord-channel`, `naturali-connect-an-x-channel` |
+| End users | `naturali-sign-in-with-a-provider`, `naturali-recognise-one-user-across-channels` |
 | Evaluate and release | `naturali-build-an-eval-dataset`, `naturali-score-an-agent-change`, `naturali-score-open-ended-answers`, `naturali-roll-out-an-agent-version`, `naturali-gate-a-rollout-on-an-eval` |
 | Automate | `naturali-orchestrate-several-agents`, `naturali-branch-an-orchestration`, `naturali-pause-a-run-for-a-human-decision`, `naturali-model-a-process-as-a-workflow`, `naturali-run-an-agent-on-a-schedule` |
+| Cases | `naturali-declare-a-playbook`, `naturali-fill-a-case-per-client`, `naturali-chain-playbooks-across-cases` |
 | Spend | `naturali-cap-project-spend`, `naturali-attribute-spend-to-end-users`, `naturali-cap-spend-per-end-user` |
 
 ## Modules, by what they are for
@@ -116,10 +118,13 @@ from this summary. Each one that creates a resource adds it to the template that
 | Answer from documents | `files`, `documents`, `ingestion-rules`, `knowledge` | Upload, let ingestion chunk and embed, attach the knowledge base to the agent; `knowledge/search` queries it directly |
 | Call external systems | `tools`, `secrets` | HTTP and MCP tools; credentials as secrets, referenced by id |
 | Remember across conversations | `memory-stores`, `memories` | Attach a memory store to the agent |
-| Talk to people | `channels`, `channel-routes`, `addresses` | WhatsApp and Discord; routing by identifier; erasure per address |
-| Gate what an agent may do | `guardrails`, `approvals`, `exceptions` | Guardrails evaluate every attached action; an approval parks a generation until a human answers |
+| Talk to people | `channels`, `channel-routes`, `addresses` | WhatsApp, Discord and X; routing by identifier; erasure per address |
+| Know who is talking | `actors`, `oauth-clients`, `oauth-connections` | One actor per end user; sign in with a provider and call its API on their behalf |
+| Keep application data | `collections` | Keyed JSON items an agent reads and writes, no embedding |
+| Gate what an agent may do | `guardrails`, `approvals`, `exceptions`, `policies` | Guardrails evaluate every attached action; an approval parks a generation until a human answers; a policy in an agent's or trigger's `policy_ids` caps what its runs may do |
 | Prove a change | `evaluations` (`datasets`, `evals`) | Score a version against a dataset before promoting it |
 | Automate | `workflows`, `tasks`, `orchestrations`, `triggers` | Triggers fire on a schedule, an event or a manual fire; orchestrations run multi-step graphs |
+| Fill structured cases | `playbooks`, `deciders` | A playbook's case per subject recomputes only what a changed input reaches; deciders answer fixed question sets |
 | Bound spend | `quotas` | The caller's own caps on requests, tokens or `cost_usd`; enforced with a `429` |
 | Failover | `model-routes` | Ordered fallback across providers |
 | Provision everything at once | `formations` | Declare resources in one template; `plan` before `create` |

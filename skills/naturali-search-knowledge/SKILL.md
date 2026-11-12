@@ -46,9 +46,11 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/knowledge/search" \
       "document_id": "doc_U92YTco33ny3EIi2",
       "chunk_id": "dchunk_cVoZTCNwwCkimF9M",
       "path": "/handbook/orchard-lane.md",
+      "document_version": 1,
       "page": 1,
       "content": "# Orchard Lane Bakery — staff handbook\n\nCustom cake orders need 72 hours' notice. …",
       "score": 0.0164,
+      "signals": { "vector": 1, "lexical": 1 },
       "similarity_score": 0.7418
     }
   ]
@@ -57,6 +59,8 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/knowledge/search" \
 
 - `score` orders the results; the ranking is the contract, the number is not.
   `similarity_score` is raw cosine (0–1), present only with a `query`.
+  `signals` says which channel (`vector`, `lexical`) found the result and at
+  what rank; `document_version` is the version to cite.
 - Note the `similarity_score` values: they are what a floor filters on.
   `min_similarity` here, `min_score` on an agent's `knowledge_config` — one
   filter, two names. A floor above what the corpus scores retrieves nothing,
@@ -65,12 +69,14 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/knowledge/search" \
 - `document_paths` narrows documents by path prefix but does not leave
   memories out: a project with memories ranks them alongside, with
   `source_type: "memory"` (`memory_id`, `memory_store_id`). `include_memories:
-  false` searches documents alone; `false` for both stores is `400`.
+  false` searches documents alone, `include_documents: false` memories alone;
+  `false` for both is `400`.
 - At least one of `query`, `document_paths`, `document_ids`,
   `memory_store_ids` or `tags` is required (`400` otherwise). Without `query`
   the call is a fetch: no ranking, no `similarity_score`.
 - `tags` keeps documents and memories whose tags contain every pair;
-  `memory_store_ids` scopes memories to those stores.
+  `metadata` filters documents by their metadata; `memory_store_ids` scopes
+  memories to those stores.
 - `limit` defaults to 10; above 100 it is clamped. `page` is `null` for plain
   text. Only `ready` documents are returned.
 - A search is a read: nothing is written, the query is not stored, and it is

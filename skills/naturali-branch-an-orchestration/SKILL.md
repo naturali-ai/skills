@@ -1,6 +1,6 @@
 ---
 name: naturali-branch-an-orchestration
-description: Make a naturali.ai orchestration route each message on a classification - a triage agent with output_schema feeds a condition node that runs only the matching agent. Use when asked to route or branch on a classification, add a condition node or conditional edges, read a structured field with output.object, or explain a node skipped in node_executions.
+description: Make a naturali.ai orchestration route each message on a classification - a triage agent with output_schema feeds a condition node that runs only the matching agent. Use when asked to route or branch on a classification, add a condition node or conditional edges, read a structured field with output.object, or explain a node skipped in a run's node executions.
 license: Apache-2.0
 metadata:
   author: naturali.ai
@@ -116,7 +116,7 @@ EOF
 ```
 
 ```json
-{ "valid": true, "errors": [], "warnings": [] }
+{ "valid": true, "problems": [], "warnings": [] }
 ```
 
 ## 3. Declare the orchestration
@@ -194,14 +194,35 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs" \
 ```json
 {
   "id": "orch_run_mKndShNtDd6ebowa",
-  "status": "succeeded",
+  "orchestration_version": 1,
+  "status": "completed",
   "output": { "category": "refund", "reply": "Please provide a receipt. Refunds are only offered for custom cakes returned within 48 hours of pickup." },
-  "node_executions": [
+  "trace_id": "trace_N3zNHR0UhbNoj1U9"
+}
+```
+
+```bash
+export REFUND_RUN=orch_run_mKndShNtDd6ebowa
+```
+
+List its steps, oldest first.
+
+CLI `naturali list-orchestration-run-node-executions` · SDK `naturali.orchestrations.listOrchestrationRunNodeExecutions`
+
+```bash
+curl "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs/$REFUND_RUN/node-executions" \
+  -H "Authorization: Bearer $NATURALI_TOKEN"
+```
+
+```json
+{
+  "data": [
     { "node_id": "triage", "status": "completed", "output": { "object": { "category": "refund" }, "content": "{\"category\":\"refund\"}" } },
     { "node_id": "route", "node_type": "condition", "status": "completed", "output": { "label": "refund" } },
     { "node_id": "refund_reply", "status": "completed", "output": { "object": null, "content": "Please provide a receipt. …" } },
     { "node_id": "general_reply", "status": "skipped", "input": null, "output": null, "started_at": null }
-  ]
+  ],
+  "next_cursor": null
 }
 ```
 
@@ -212,19 +233,20 @@ curl -X POST "https://api.naturali.ai/v1/projects/$PROJECT/orchestration-runs" \
 
 ## 5. Run a general question
 
-Same call, `"input": { "message": "Are you open on Sunday?" }`:
+Same call, `"input": { "message": "Are you open on Sunday?" }`, answers
+`"status": "completed"` with
+`"output": { "category": "other", "reply": "No, sorry, we are closed on Sundays. …" }`.
+Export its id as `GENERAL_RUN` and list its node executions the same way:
 
 ```json
 {
-  "id": "orch_run_p0CMMm2cKBvBMRx0",
-  "status": "succeeded",
-  "output": { "category": "other", "reply": "No, sorry, we are closed on Sundays. …" },
-  "node_executions": [
+  "data": [
     { "node_id": "triage", "status": "completed", "output": { "object": { "category": "other" } } },
     { "node_id": "route", "status": "completed", "output": { "label": "other" } },
     { "node_id": "general_reply", "status": "completed" },
     { "node_id": "refund_reply", "status": "skipped" }
-  ]
+  ],
+  "next_cursor": null
 }
 ```
 

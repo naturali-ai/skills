@@ -17,8 +17,9 @@ billing owner pays for what they run.
 ## Before you start
 
 - `NATURALI_TOKEN` — an **account-wide** credential: a session JWT, or a
-  `nat_sk_…` key *not* scoped to one project. A project-scoped key is refused
-  `403 access_denied` on adding: the membership would outlive the key's own
+  `nat_sk_…` key *not* scoped to one project. A project-scoped key is
+  refused `403 access_denied` on adding or changing a role, and a connected
+  app is refused too: the membership would outlive the credential's own
   revocation.
 - `PROJECT` — a project you are `owner` or `admin` of, from
   `naturali-create-a-project` or any you have.
@@ -120,7 +121,7 @@ curl "https://api.naturali.ai/v1/projects/$PROJECT/members" \
 
 ## 4. Change their role, or let them go
 
-Only the project `owner` may change a role.
+Only the project `owner` may change a role, with an account-wide credential.
 
 CLI `naturali update-project-member` · SDK `naturali.projects.updateProjectMember`
 
@@ -146,8 +147,14 @@ curl -X DELETE "https://api.naturali.ai/v1/projects/$PROJECT/members/$MEMBER" \
 
 - An `owner` removes anyone; an `admin` removes a `member`, not another
   `admin`; **anyone may remove themselves**, whatever their role.
-- The `owner`'s row answers `400` on both calls: it names who pays, and a
-  project with no owner is unreachable.
+- The `owner`'s row answers `400` on both calls: it names who pays. To hand
+  the project over, the owner proposes a member with `PUT
+  …/projects/{project_id}/transfer` and `{ "member_id" }` (CLI
+  `naturali propose-project-transfer` · SDK
+  `naturali.projects.proposeProjectTransfer`); they accept with `POST
+  …/transfer/accept` (CLI `naturali accept-project-transfer`), and the old
+  owner stays as `admin`. A new owner's plan that cannot hold the project is
+  `403 plan_limit_reached`; nothing moves.
 
 Done when the list shows your colleague with the chosen `role` and
 `status: "active"` after their first sign-in.

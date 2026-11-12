@@ -65,9 +65,11 @@ export GUARDRAIL=guard_WwusNpQOzrgblxuA
   snake_case) and `runtime.*` (platform metrics such as
   `runtime.tools.tool_calls.24h`). Anything else is refused `400` at write
   time; a missing value at evaluation fails closed.
-- A missing `var` is falsy, so `{ "<": [{ var: args.amount }, 100] }` is
-  **true** when `amount` is absent. Where that must not reach `A`, test
-  presence: `{ and: [{ var: args.amount }, { "<": [{ var: args.amount }, 100] }] }`.
+- A missing `var` is `null`, and `{ "<": [null, 100] }` is **true**, so the
+  class above answers `A` when `amount` is absent. Where that must not reach
+  `A`, check presence in the same expression:
+  `{ and: [{ "!==": [{ var: args.amount }, null] }, { "<": [{ var: args.amount }, 100] }] }`
+  (`{ "!!": { var: args.amount } }` also works but treats `0` as missing).
 - In a template `class`, `default_class`, `guard` and `escalate` sit directly
   on the properties; the direct route nests them in one `document`.
   `expires_in` (the approval window, default 24 h) exists only in that
@@ -189,4 +191,4 @@ Done when the $40 call executes and the $400 call leaves a `pending` item.
 
 - `naturali-settle-an-approval` — approve, edit or reject the held call and find the agent's continuation.
 - `naturali-pause-a-run-for-a-human-decision` — a fixed approval step for a call that always needs a person.
-- `naturali-limit-what-an-agent-may-do` — refuse an action outright with a boundary policy.
+- `naturali-limit-what-an-agent-may-do` — refuse a platform action outright with a policy.
